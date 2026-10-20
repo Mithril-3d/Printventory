@@ -1,0 +1,227 @@
+# Sign Windows NSIS + macOS DMG via SignPath Foundation.
+# Requires repo secrets/vars: SIGNPATH_API_TOKEN, SIGNPATH_ORGANIZATION_ID,
+# SIGNPATH_PROJECT_SLUG, SIGNPATH_SIGNING_POLICY_SLUG,
+# SIGNPATH_ARTIFACT_CONFIGURATION_SLUG (Windows).
+# macOS also needs CERTIFICATE_SUBJECT_NAME (and Apple notarization secrets for release).
+name: Sign desktop packages
+
+on:
+  workflow_dispatch:
+    inputs:
+      signing_policy:
+        description: SignPath signing policy slug
+        required: false
+        default: test-signing
+        type: choice
+        options:
+          - test-signing
+          - release-signing
+      skip_windows:
+        description: Skip Windows job
+        required: false
+        type: boolean
+        default: false
+      skip_macos:
+        description: Skip macOS job (default until Apple Developer ID is in SignPath)
+        required: false
+        type: boolean
+        default: true
+  release:
+    types: [published]
+
+permissions:
+  actions: read
+  contents: write
+
+env:
+  SIGNPATH_ORGANIZATION_ID: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+  SIGNPATH_PROJECT_SLUG: ${{ vars.SIGNPATH_PROJECT_SLUG }}
+  SIGNPATH_ARTIFACT_CONFIGURATION_SLUG: ${{ vars.SIGNPATH_ARTIFACT_CONFIGURATION_SLUG }}
+
+jobs:
+  sign-windows:
+    if: ${{ github.event_name == 'release' || inputs.skip_windows != true }}
+    runs-on: windows-latest
+    env:
+      SIGNING_POLICY_SLUG: ${{ inputs.signing_policy || vars.SIGNPATH_SIGNING_POLICY_SLUG || 'test-signing' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build unsigned Windows NSIS installer
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+        run: npm run build:win
+
+      - name: Locate installer
+        id: locate
+        shell: pwsh
+        run: |
+          $exe = Get-ChildItem -Path dist -Filter 'Printventory-Setup-*.exe' -File |
+            Sort-Object LastWriteTime -Descending |
+            Select-Object -First 1
+          if (-not $exe) { throw 'No Printventory-Setup-*.exe found in dist/' }
+          Write-Host "Installer: $($exe.FullName)"
+          "path=$($exe.FullName)" >> $env:GITHUB_OUTPUT
+          "name=$($exe.Name)" >> $env:GITHUB_OUTPUT
+
+      - name: Upload unsigned installer
+        id: upload-unsigned
+        uses: actions/upload-artifact@v4
+        with:
+          name: unsigned-windows-installer
+          path: ${{ steps.locate.outputs.path }}
+          if-no-files-found: error
+
+      - name: Submit SignPath signing request
+        id: sign
+        uses: signpath/github-action-submit-signing-request@v2
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ env.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ env.SIGNPATH_PROJECT_SLUG }}
+          signing-policy-slug: ${{ env.SIGNING_POLICY_SLUG }}
+          artifact-configuration-slug: ${{ env.SIGNPATH_ARTIFACT_CONFIGURATION_SLUG }}
+          github-artifact-id: ${{ steps.upload-unsigned.outputs.artifact-id }}
+          wait-for-completion: true
+          output-artifact-directory: ${{ github.workspace }}/signed-windows
+
+      - name: Upload signed installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: signed-windows-installer
+          path: signed-windows/**
+          if-no-files-found: error
+
+      - name: Attach signed installer to release
+        if: github.event_name == 'release'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: pwsh
+        run: |
+          $file = Get-ChildItem -Path signed-windows -Recurse -Filter 'Printventory-Setup-*.exe' -File |
+            Select-Object -First 1
+          if (-not $file) { throw 'Signed installer not found' }
+          gh release upload "${{ github.event.release.tag_name }}" $file.FullName --clobber
+
+  sign-macos:
+    if: >-
+      ${{
+        (github.event_name == 'workflow_dispatch' && inputs.skip_macos != true && vars.CERTIFICATE_SUBJECT_NAME != '') ||
+        (github.event_name == 'release' && vars.CERTIFICATE_SUBJECT_NAME != '')
+      }}
+    runs-on: macos-latest
+    env:
+      SIGNING_POLICY_SLUG: ${{ inputs.signing_policy || vars.SIGNPATH_SIGNING_POLICY_SLUG || 'test-signing' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install SignPath CryptoTokenKit
+        run: |
+          curl -fsSL -o SignPathCryptoTokenKit.dmg \
+            https://download.signpath.io/cryptoproviders/macos-cryptotokenkit/2-latest/SignPathCryptoTokenKit.dmg
+          codesign -dv --verbose=2 SignPathCryptoTokenKit.dmg
+          mkdir -p tools
+          hdiutil attach ./SignPathCryptoTokenKit.dmg -mountroot ./tools
+
+      - name: Start SignPath CryptoTokenKit
+        env:
+          SIGNPATH_API_TOKEN: ${{ secrets.SIGNPATH_API_TOKEN }}
+        run: |
+          open "./tools/SignPathCryptoTokenKit/SignPathCryptoTokenKit.app" --args \
+            --organization-id "${{ env.SIGNPATH_ORGANIZATION_ID }}" \
+            --project-slug "${{ env.SIGNPATH_PROJECT_SLUG }}" \
+            --signing-policy-slug "${{ env.SIGNING_POLICY_SLUG }}" \
+            --api-token "$SIGNPATH_API_TOKEN"
+          sleep 25
+          security list-smartcards || true
+
+      - name: Build macOS universal DMG via electron-builder + CTK identity
+        env:
+          CSC_NAME: ${{ vars.CERTIFICATE_SUBJECT_NAME }}
+        run: npm run build:mac
+
+      - name: Codesign app and DMG (ensure)
+        env:
+          SIGN_IDENTITY: ${{ vars.CERTIFICATE_SUBJECT_NAME }}
+        run: |
+          APP=$(find dist -maxdepth 3 -type d -name 'Printventory.app' | head -1)
+          DMG=$(ls -1 dist/Printventory*.dmg 2>/dev/null | head -1)
+          if [ -z "$DMG" ]; then
+            DMG=$(find dist -maxdepth 2 -name '*.dmg' | head -1)
+          fi
+          if [ -n "$APP" ]; then
+            codesign -f --timestamp --options=runtime \
+              -s "$SIGN_IDENTITY" \
+              --entitlements build/entitlements.mac.plist \
+              "$APP"
+            codesign -dv --verbose=2 "$APP"
+          fi
+          if [ -n "$DMG" ]; then
+            codesign -f --timestamp --options=runtime \
+              -s "$SIGN_IDENTITY" \
+              "$DMG"
+            codesign -dv --verbose=2 "$DMG"
+            echo "DMG_PATH=$DMG" >> "$GITHUB_ENV"
+          fi
+
+      - name: Notarize DMG (release only)
+        if: github.event_name == 'release' && vars.APPLE_ID != '' && vars.APPLE_TEAM_ID != ''
+        env:
+          APPLE_ID: ${{ vars.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ vars.APPLE_TEAM_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_NOTARIZATION_APP_SPECIFIC_PASSWORD }}
+        run: |
+          if [ -z "$DMG_PATH" ] || [ -z "$APPLE_APP_SPECIFIC_PASSWORD" ]; then
+            echo "Skipping notarization (missing DMG or Apple password secret)."
+            exit 0
+          fi
+          xcrun notarytool submit "$DMG_PATH" \
+            --apple-id "$APPLE_ID" \
+            --team-id "$APPLE_TEAM_ID" \
+            --password "$APPLE_APP_SPECIFIC_PASSWORD" \
+            --wait \
+            --timeout 30m
+          xcrun stapler staple "$DMG_PATH"
+
+      - name: Upload signed macOS DMG artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: signed-macos-dmg
+          path: |
+            dist/*.dmg
+          if-no-files-found: warn
+
+      - name: Attach signed DMG to release
+        if: github.event_name == 'release'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          DMG=$(ls -1 dist/Printventory*.dmg 2>/dev/null | head -1)
+          if [ -z "$DMG" ]; then
+            DMG=$(find dist -maxdepth 2 -name '*.dmg' | head -1)
+          fi
+          if [ -z "$DMG" ]; then
+            echo "No DMG to attach"
+            exit 1
+          fi
+          gh release upload "${{ github.event.release.tag_name }}" "$DMG" --clobber

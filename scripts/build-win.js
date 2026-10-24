@@ -51,10 +51,15 @@ fs.mkdirSync(stagingAbs, { recursive: true });
 const outputRel = path.join('dist', stagingName).replace(/\\/g, '/');
 const configOutput = `--config.directories.output=${outputRel}`;
 
+const buildEnv = { ...process.env };
+if (!buildEnv.CSC_LINK && !buildEnv.WIN_CSC_LINK) {
+  buildEnv.CSC_IDENTITY_AUTO_DISCOVERY = 'false';
+}
+
 const eb = spawnSync(
   'npx',
   ['electron-builder', '-w', '--config.nsis.differentialPackage=false', configOutput],
-  { cwd: projectRoot, stdio: 'inherit', shell: true, env: process.env }
+  { cwd: projectRoot, stdio: 'inherit', shell: true, env: buildEnv }
 );
 
 if (eb.error) {

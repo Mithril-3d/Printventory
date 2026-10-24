@@ -2977,7 +2977,9 @@ function scheduleTotalModelCountRefresh() {
       const totalCount = await window.electron.getTotalModelCount();
       const totalElement = document.getElementById('total-count');
       if (totalElement) {
-        totalElement.textContent = `${totalCount} model${totalCount !== 1 ? 's' : ''} total`;
+        totalElement.textContent = window.t
+          ? window.t('sidebar.modelsTotal', `${totalCount} models total`, { count: totalCount })
+          : `${totalCount} models total`;
       }
     } catch (error) {
       console.error('Error updating total model count:', error);
@@ -2990,7 +2992,9 @@ async function updateModelCounts(viewCount) {
   try {
     const viewElement = document.getElementById('view-count');
     if (viewElement) {
-      viewElement.textContent = `${viewCount} model${viewCount !== 1 ? 's' : ''} in view`;
+      viewElement.textContent = window.t
+        ? window.t('sidebar.modelsInView', `${viewCount} models in view`, { count: viewCount })
+        : `${viewCount} models in view`;
     }
     scheduleTotalModelCountRefresh();
   } catch (error) {

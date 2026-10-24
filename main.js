@@ -9148,6 +9148,12 @@ ipcMain.handle('show-context-menu', async (event, fileIdentifier) => {
   // Check if any file is a zip entry
   const isZipEntry = filePaths.length === 1 && filePaths[0].includes('::');
   const pathInfo = filePaths.length === 1 ? parseZipPath(filePaths[0]) : null;
+
+  let isJa = true;
+  try {
+    const langRow = cachedPrepare('SELECT value FROM settings WHERE key = ?').get('appLanguage');
+    if (langRow && langRow.value === 'en') isJa = false;
+  } catch (e) {}
   
   let menuItems = [];
 
@@ -9156,7 +9162,7 @@ ipcMain.handle('show-context-menu', async (event, fileIdentifier) => {
   if (previewablePaths.length === 1 && !previewAsBundle) {
     const fp = previewablePaths[0];
     menuItems.push({
-      label: 'Preview',
+      label: isJa ? 'プレビュー' : 'Preview',
       click: async () => {
         try {
           console.log('Preview clicked for file:', fp);
@@ -9169,7 +9175,7 @@ ipcMain.handle('show-context-menu', async (event, fileIdentifier) => {
               dialog.showMessageBox(win, {
                 type: 'error',
                 title: 'Error',
-                message: 'Could not preview file',
+                message: isJa ? 'ファイルをプレビューできませんでした' : 'Could not preview file',
                 detail: error.message
               });
             }
@@ -9180,7 +9186,7 @@ ipcMain.handle('show-context-menu', async (event, fileIdentifier) => {
     menuItems.push({ type: 'separator' });
   } else if (previewablePaths.length > 1 || (previewAsBundle && previewablePaths.length >= 1)) {
     const bundlePayload = {
-      groupLabel: groupLabel || (previewablePaths.length > 1 ? 'Bundle' : 'Preview'),
+      groupLabel: groupLabel || (previewablePaths.length > 1 ? (isJa ? 'バンドル' : 'Bundle') : (isJa ? 'プレビュー' : 'Preview')),
       children: previewablePaths.map((fp) => ({
         filePath: fp,
         fileName: fp.includes('::')
@@ -9189,7 +9195,7 @@ ipcMain.handle('show-context-menu', async (event, fileIdentifier) => {
       }))
     };
     menuItems.push({
-      label: 'Preview',
+      label: isJa ? 'プレビュー' : 'Preview',
       click: async () => {
         try {
           console.log('Preview clicked for bundle/group:', bundlePayload.groupLabel, bundlePayload.children.length);
@@ -9202,7 +9208,7 @@ ipcMain.handle('show-context-menu', async (event, fileIdentifier) => {
               dialog.showMessageBox(win, {
                 type: 'error',
                 title: 'Error',
-                message: 'Could not preview bundle',
+                message: isJa ? 'バンドルをプレビューできませんでした' : 'Could not preview bundle',
                 detail: error.message
               });
             }
@@ -9216,7 +9222,7 @@ ipcMain.handle('show-context-menu', async (event, fileIdentifier) => {
   // Add "Download" option for server mode at the top
   if (isServerMode && filePaths.length === 1) {
     menuItems.push({
-      label: 'Download',
+      label: isJa ? 'ダウンロード' : 'Download',
       click: async () => {
         try {
           console.log('Download clicked for file:', filePaths[0]);
@@ -9237,7 +9243,7 @@ ipcMain.handle('show-context-menu', async (event, fileIdentifier) => {
             dialog.showMessageBox(win, {
               type: 'error',
               title: 'Error',
-              message: 'Could not download file',
+              message: isJa ? 'ファイルをダウンロードできませんでした' : 'Could not download file',
               detail: error.message
             });
           }
@@ -9250,7 +9256,7 @@ ipcMain.handle('show-context-menu', async (event, fileIdentifier) => {
   // Add "Open File" option (only in normal mode, not server mode)
   if (!isServerMode) {
     menuItems.push({
-      label: 'Open File',
+      label: isJa ? 'ファイルを開く' : 'Open File',
       enabled: filePaths.length === 1,
       click: async () => {
         try {
@@ -9282,7 +9288,7 @@ ipcMain.handle('show-context-menu', async (event, fileIdentifier) => {
   // Add "Open Directory" only if NOT in server mode
   if (!isServerMode) {
     menuItems.push({
-      label: 'Open Directory',
+      label: isJa ? 'フォルダを開く' : 'Open Directory',
       enabled: filePaths.length === 1,
       click: async () => {
         try {
@@ -9296,8 +9302,8 @@ ipcMain.handle('show-context-menu', async (event, fileIdentifier) => {
           console.error('Error opening directory:', error);
           dialog.showMessageBox({
             type: 'error',
-            title: 'Error',
-            message: 'Could not open directory',
+            title: isJa ? 'エラー' : 'Error',
+            message: isJa ? 'フォルダを開けませんでした' : 'Could not open directory',
             detail: error.message
           });
         }
@@ -9310,20 +9316,20 @@ ipcMain.handle('show-context-menu', async (event, fileIdentifier) => {
     menuItems.push(
       { type: 'separator' },
       {
-        label: 'Extract Model',
+        label: isJa ? 'モデルを抽出' : 'Extract Model',
         click: async () => {
           try {
             const result = await dialog.showOpenDialog(BrowserWindow.fromWebContents(event.sender), {
               properties: ['openDirectory'],
-              title: 'Select destination folder for extraction'
+              title: isJa ? '展開先フォルダを選択' : 'Select destination folder for extraction'
             });
             
             if (!result.canceled && result.filePaths.length > 0) {
               const destPath = await extractModelFromZip(pathInfo.zipPath, pathInfo.entryPath, result.filePaths[0]);
               dialog.showMessageBox(BrowserWindow.fromWebContents(event.sender), {
                 type: 'info',
-                title: 'Extraction Complete',
-                message: 'Model extracted successfully',
+                title: isJa ? '展開完了' : 'Extraction Complete',
+                message: isJa ? 'モデルが正常に抽出されました' : 'Model extracted successfully',
                 detail: `Extracted to: ${destPath}`
               });
             }
@@ -9331,28 +9337,28 @@ ipcMain.handle('show-context-menu', async (event, fileIdentifier) => {
             console.error('Error extracting model:', error);
             dialog.showMessageBox(BrowserWindow.fromWebContents(event.sender), {
               type: 'error',
-              title: 'Error',
-              message: 'Could not extract model',
+              title: isJa ? 'エラー' : 'Error',
+              message: isJa ? 'モデルを抽出できませんでした' : 'Could not extract model',
               detail: error.message
             });
           }
         }
       },
       {
-        label: 'Extract Zip Archive',
+        label: isJa ? 'Zipアーカイブを展開' : 'Extract Zip Archive',
         click: async () => {
           try {
             const result = await dialog.showOpenDialog(BrowserWindow.fromWebContents(event.sender), {
               properties: ['openDirectory'],
-              title: 'Select destination folder for extraction'
+              title: isJa ? '展開先フォルダを選択' : 'Select destination folder for extraction'
             });
             
             if (!result.canceled && result.filePaths.length > 0) {
               const destPath = await extractModelFromZip(pathInfo.zipPath, pathInfo.entryPath, result.filePaths[0]);
               dialog.showMessageBox(BrowserWindow.fromWebContents(event.sender), {
                 type: 'info',
-                title: 'Extraction Complete',
-                message: 'Archive extracted successfully',
+                title: isJa ? '展開完了' : 'Extraction Complete',
+                message: isJa ? 'アーカイブが正常に展開されました' : 'Archive extracted successfully',
                 detail: `Extracted to: ${destPath}`
               });
             }
@@ -9360,8 +9366,8 @@ ipcMain.handle('show-context-menu', async (event, fileIdentifier) => {
             console.error('Error extracting archive:', error);
             dialog.showMessageBox(BrowserWindow.fromWebContents(event.sender), {
               type: 'error',
-              title: 'Error',
-              message: 'Could not extract archive',
+              title: isJa ? 'エラー' : 'Error',
+              message: isJa ? 'アーカイブを展開できませんでした' : 'Could not extract archive',
               detail: error.message
             });
           }
@@ -9389,7 +9395,7 @@ ipcMain.handle('show-context-menu', async (event, fileIdentifier) => {
   // Desktop mode launches the slicer here, and only for a single selection.
   if (slicers.length > 0 && filePaths.length >= 1 && (isServerMode || filePaths.length === 1)) {
     const slicerSubmenu = {
-      label: 'Open in Slicer',
+      label: isJa ? 'スライサーで開く' : 'Open in Slicer',
       submenu: slicers.map(slicer => ({
         label: slicer.name,
         slicerName: slicer.name,
@@ -9492,7 +9498,7 @@ ipcMain.handle('show-context-menu', async (event, fileIdentifier) => {
   }
 
   menuItems.push({
-    label: 'Tag from Folder',
+    label: isJa ? 'フォルダ名からタグ付け' : 'Tag from Folder',
     click: async () => {
       const win = getWindowFromEvent(event);
       const configuredLevels = clampFolderLevels(getSettings().aiTagFolderLevels);
@@ -9500,10 +9506,14 @@ ipcMain.handle('show-context-menu', async (event, fileIdentifier) => {
       if (win && !win.isDestroyed() && !isServerMode) {
         const confirm = await dialog.showMessageBox(win, {
           type: 'question',
-          title: 'Tag from Folder',
-          message: `Add folder names as tags for ${filePaths.length} model${filePaths.length === 1 ? '' : 's'}?`,
-          detail: `Uses the closest ${levels} folder name${levels === 1 ? '' : 's'} above each file. Change how many in Settings > AI Configuration.`,
-          buttons: ['Tag', 'Cancel'],
+          title: isJa ? 'フォルダ名からタグ付け' : 'Tag from Folder',
+          message: isJa
+            ? `${filePaths.length} 件のモデルに親フォルダ名をタグとして追加しますか？`
+            : `Add folder names as tags for ${filePaths.length} model${filePaths.length === 1 ? '' : 's'}?`,
+          detail: isJa
+            ? `ファイルから上位 ${levels} 階層までのフォルダ名を使用します（設定 > AI設定 で階層数を変更可能）。`
+            : `Uses the closest ${levels} folder name${levels === 1 ? '' : 's'} above each file. Change how many in Settings > AI Configuration.`,
+          buttons: isJa ? ['タグ付け', 'キャンセル'] : ['Tag', 'Cancel'],
           defaultId: 0,
           cancelId: 1
         });
@@ -9516,13 +9526,17 @@ ipcMain.handle('show-context-menu', async (event, fileIdentifier) => {
         } else if (event.sender && event.sender.send) {
           event.sender.send('refresh-grid');
         }
-        const summary = result.tagsAdded > 0
-          ? `Added ${result.tagsAdded} tag${result.tagsAdded === 1 ? '' : 's'} on ${result.updated} model${result.updated === 1 ? '' : 's'}.`
-          : 'No new folder tags were added. Those tags may already be on the models, or the files have no usable parent folder.';
+        const summary = isJa
+          ? (result.tagsAdded > 0
+              ? `${result.updated} 件のモデルに ${result.tagsAdded} 個のタグを追加しました。`
+              : '新しいフォルダタグは追加されませんでした。既にモデルに登録されているか、上位フォルダが存在しません。')
+          : (result.tagsAdded > 0
+              ? `Added ${result.tagsAdded} tag${result.tagsAdded === 1 ? '' : 's'} on ${result.updated} model${result.updated === 1 ? '' : 's'}.`
+              : 'No new folder tags were added. Those tags may already be on the models, or the files have no usable parent folder.');
         if (win && !win.isDestroyed() && !isServerMode) {
           await dialog.showMessageBox(win, {
             type: 'info',
-            title: 'Tag from Folder',
+            title: isJa ? 'フォルダ名からタグ付け' : 'Tag from Folder',
             message: summary
           });
         } else {
@@ -9533,8 +9547,8 @@ ipcMain.handle('show-context-menu', async (event, fileIdentifier) => {
         if (win && !win.isDestroyed() && !isServerMode) {
           await dialog.showMessageBox(win, {
             type: 'error',
-            title: 'Tag from Folder',
-            message: 'Could not add folder tags',
+            title: isJa ? 'エラー' : 'Error',
+            message: isJa ? 'フォルダタグの追加に失敗しました' : 'Could not add folder tags',
             detail: error.message
           });
         }
@@ -9559,7 +9573,7 @@ ipcMain.handle('show-context-menu', async (event, fileIdentifier) => {
     // Capture event.sender for use in the click handler (needed for desktop mode)
     const sender = event.sender;
     menuItems.push({
-      label: 'Generate Tags',
+      label: isJa ? 'AIタグ生成' : 'Generate Tags',
       // Remove the restriction to only one file
       click: async (clickEvent) => {
         console.log('[Generate Tags] Click handler called, filePaths:', filePaths);
@@ -9942,7 +9956,7 @@ ipcMain.handle('show-context-menu', async (event, fileIdentifier) => {
   // Add "Pull Metadata" option for 3MF files
   if (has3MFFiles) {
     menuItems.push({
-      label: 'Pull Metadata',
+      label: isJa ? 'メタデータを抽出' : 'Pull Metadata',
       click: async () => {
         try {
           // Filter to only 3MF files
@@ -9984,15 +9998,19 @@ ipcMain.handle('show-context-menu', async (event, fileIdentifier) => {
           // Show confirmation dialog if any models have existing data
           const win = BrowserWindow.fromWebContents(event.sender);
           if (modelsWithData.length > 0) {
-            const message = modelsWithData.length === 1
-              ? `This will overwrite existing metadata for:\n\n${modelsWithData[0].fileName}\n\nExisting data:\n${modelsWithData[0].designer ? `Designer: ${modelsWithData[0].designer}\n` : ''}${modelsWithData[0].parentModel ? `Parent Model: ${modelsWithData[0].parentModel}\n` : ''}${modelsWithData[0].notes ? `Notes: ${modelsWithData[0].notes.substring(0, 50)}${modelsWithData[0].notes.length > 50 ? '...' : ''}\n` : ''}${modelsWithData[0].license ? `License: ${modelsWithData[0].license}\n` : ''}\n\nContinue?`
-              : `This will overwrite existing metadata for ${modelsWithData.length} model(s).\n\nContinue?`;
+            const message = isJa
+              ? (modelsWithData.length === 1
+                  ? `以下のモデルの既存メタデータを上書きします:\n\n${modelsWithData[0].fileName}\n\n続行しますか？`
+                  : `${modelsWithData.length} 件のモデルの既存メタデータを上書きします。\n\n続行しますか？`)
+              : (modelsWithData.length === 1
+                  ? `This will overwrite existing metadata for:\n\n${modelsWithData[0].fileName}\n\nExisting data:\n${modelsWithData[0].designer ? `Designer: ${modelsWithData[0].designer}\n` : ''}${modelsWithData[0].parentModel ? `Parent Model: ${modelsWithData[0].parentModel}\n` : ''}${modelsWithData[0].notes ? `Notes: ${modelsWithData[0].notes.substring(0, 50)}${modelsWithData[0].notes.length > 50 ? '...' : ''}\n` : ''}${modelsWithData[0].license ? `License: ${modelsWithData[0].license}\n` : ''}\n\nContinue?`
+                  : `This will overwrite existing metadata for ${modelsWithData.length} model(s).\n\nContinue?`);
             
             const confirm = await dialog.showMessageBox(win, {
               type: 'warning',
-              title: 'Confirm Metadata Overwrite',
+              title: isJa ? 'メタデータ上書きの確認' : 'Confirm Metadata Overwrite',
               message: message,
-              buttons: ['Yes', 'No'],
+              buttons: isJa ? ['はい', 'いいえ'] : ['Yes', 'No'],
               defaultId: 1,
               cancelId: 1
             });
@@ -10121,7 +10139,7 @@ ipcMain.handle('show-context-menu', async (event, fileIdentifier) => {
   // Add "Add Image" option for single or multi selection (same image added to all selected)
   if (filePaths.length >= 1) {
     menuItems.push({
-      label: 'Add Image',
+      label: isJa ? '画像を追加' : 'Add Image',
       click: async () => {
         try {
           if (isServerMode) {
@@ -10135,11 +10153,11 @@ ipcMain.handle('show-context-menu', async (event, fileIdentifier) => {
             // Normal mode: use native file dialog
             const win = BrowserWindow.fromWebContents(event.sender);
             const result = await dialog.showOpenDialog(win, {
-              title: 'Select Image File',
+              title: isJa ? '画像ファイルを選択' : 'Select Image File',
               properties: ['openFile'],
               filters: [
-                { name: 'Images', extensions: ['png', 'jpg', 'jpeg', 'gif', 'webp'] },
-                { name: 'All Files', extensions: ['*'] }
+                { name: isJa ? '画像' : 'Images', extensions: ['png', 'jpg', 'jpeg', 'gif', 'webp'] },
+                { name: isJa ? 'すべてのファイル' : 'All Files', extensions: ['*'] }
               ]
             });
             
@@ -10181,8 +10199,8 @@ ipcMain.handle('show-context-menu', async (event, fileIdentifier) => {
           if (win) {
             dialog.showMessageBox(win, {
               type: 'error',
-              title: 'Error',
-              message: 'Could not add image',
+              title: isJa ? 'エラー' : 'Error',
+              message: isJa ? '画像を追加できませんでした' : 'Could not add image',
               detail: error.message
             });
           }
@@ -10194,7 +10212,7 @@ ipcMain.handle('show-context-menu', async (event, fileIdentifier) => {
   // Keep "Manage Thumbnails" visible in all modes for menu consistency.
   // It is only actionable for a single selected model.
   menuItems.push({
-    label: 'Manage Thumbnails',
+    label: isJa ? 'サムネイル管理' : 'Manage Thumbnails',
     enabled: filePaths.length === 1,
     click: async () => {
       if (filePaths.length !== 1) return;
@@ -10208,9 +10226,9 @@ ipcMain.handle('show-context-menu', async (event, fileIdentifier) => {
           if (win) {
             await dialog.showMessageBox(win, {
               type: 'info',
-              title: 'No Thumbnails',
-              message: 'This model has no thumbnails to manage.',
-              detail: 'Please add an image first using "Add Image".'
+              title: isJa ? 'サムネイルなし' : 'No Thumbnails',
+              message: isJa ? 'このモデルには管理するサムネイルがありません。' : 'This model has no thumbnails to manage.',
+              detail: isJa ? '先に「画像を追加」で画像を登録してください。' : 'Please add an image first using "Add Image".'
             });
           }
           return;
@@ -10228,8 +10246,8 @@ ipcMain.handle('show-context-menu', async (event, fileIdentifier) => {
         if (win) {
           dialog.showMessageBox(win, {
             type: 'error',
-            title: 'Error',
-            message: 'Could not open thumbnail manager',
+            title: isJa ? 'エラー' : 'Error',
+            message: isJa ? 'サムネイルマネージャーを開けませんでした' : 'Could not open thumbnail manager',
             detail: error.message
           });
         }
@@ -10247,11 +10265,11 @@ ipcMain.handle('show-context-menu', async (event, fileIdentifier) => {
   // Add "Move" only if NOT in server mode
   if (!isServerMode) {
     fileOperationItems.push({
-      label: 'Move',
+      label: isJa ? '移動' : 'Move',
       click: async () => {
         const win = BrowserWindow.fromWebContents(event.sender);
         const result = await dialog.showOpenDialog(win, {
-          title: 'Select Destination Folder',
+          title: isJa ? '移動先フォルダを選択' : 'Select Destination Folder',
           properties: ['openDirectory']
         });
         if (!result.canceled && result.filePaths && result.filePaths.length > 0) {
@@ -10264,8 +10282,8 @@ ipcMain.handle('show-context-menu', async (event, fileIdentifier) => {
             } catch (error) {
               await dialog.showMessageBox(win, {
                 type: 'error',
-                title: 'Error Moving File',
-                message: `Failed to move file ${fp}: ${error.message}`
+                title: isJa ? 'ファイル移動エラー' : 'Error Moving File',
+                message: isJa ? `ファイル ${fp} の移動に失敗しました: ${error.message}` : `Failed to move file ${fp}: ${error.message}`
               });
             }
           }
@@ -10278,7 +10296,7 @@ ipcMain.handle('show-context-menu', async (event, fileIdentifier) => {
   menuItems.push(
     ...fileOperationItems,
     {
-      label: 'Remove from Library',
+      label: isJa ? 'ライブラリから解除' : 'Remove from Library',
       click: async () => {
         // In server mode (Docker/browser), no native dialog - proceed and broadcast refresh
         let confirmed = isServerMode;
@@ -10288,9 +10306,11 @@ ipcMain.handle('show-context-menu', async (event, fileIdentifier) => {
           const moreFiles = filePaths.length > maxFilesToShow ? `\n... and ${filePaths.length - maxFilesToShow} more file${filePaths.length - maxFilesToShow === 1 ? '' : 's'}` : '';
           const confirm = await dialog.showMessageBox({
             type: 'warning',
-            title: 'Confirm Remove',
-            message: `Are you sure you want to remove ${filePaths.length} file${filePaths.length === 1 ? '' : 's'} from the library?\nFiles will remain on disk but will be removed from Printventory.\n\nFiles:\n${fileList}${moreFiles}`,
-            buttons: ['Yes', 'No'],
+            title: isJa ? '登録解除の確認' : 'Confirm Remove',
+            message: isJa
+              ? `${filePaths.length} 件のファイルをライブラリから解除しますか？\nファイルはディスク上に残りますが、Printventoryのライブラリから削除されます。\n\n対象ファイル:\n${fileList}${moreFiles}`
+              : `Are you sure you want to remove ${filePaths.length} file${filePaths.length === 1 ? '' : 's'} from the library?\nFiles will remain on disk but will be removed from Printventory.\n\nFiles:\n${fileList}${moreFiles}`,
+            buttons: isJa ? ['はい', 'いいえ'] : ['Yes', 'No'],
             defaultId: 1,
             cancelId: 1,
           });
@@ -10309,8 +10329,8 @@ ipcMain.handle('show-context-menu', async (event, fileIdentifier) => {
             if (!isServerMode) {
               await dialog.showMessageBox({
                 type: 'error',
-                title: 'Error',
-                message: `An error occurred while removing from library: ${error.message}`
+                title: isJa ? 'エラー' : 'Error',
+                message: isJa ? `ライブラリからの解除中にエラーが発生しました: ${error.message}` : `An error occurred while removing from library: ${error.message}`
               });
             }
           }
@@ -10318,7 +10338,7 @@ ipcMain.handle('show-context-menu', async (event, fileIdentifier) => {
       }
     },
     {
-      label: 'Delete from Disk',  // Renamed from just "Delete"
+      label: isJa ? 'ディスクから完全削除' : 'Delete from Disk',  // Renamed from just "Delete"
       click: async () => {
         // In server mode (Docker/browser), no native dialog - proceed and broadcast refresh
         let confirmed = isServerMode;
@@ -10328,9 +10348,11 @@ ipcMain.handle('show-context-menu', async (event, fileIdentifier) => {
           const moreFiles = filePaths.length > maxFilesToShow ? `\n... and ${filePaths.length - maxFilesToShow} more file${filePaths.length - maxFilesToShow === 1 ? '' : 's'}` : '';
           const confirm = await dialog.showMessageBox({
             type: 'warning',
-            title: 'Confirm Delete',
-            message: `Are you sure you want to DELETE ${filePaths.length} file${filePaths.length === 1 ? '' : 's'} from disk?\nThis will permanently delete the files and cannot be undone!\n\nFiles:\n${fileList}${moreFiles}`,
-            buttons: ['Yes', 'No'],
+            title: isJa ? '削除の確認' : 'Confirm Delete',
+            message: isJa
+              ? `本当に ${filePaths.length} 件のファイルをディスクから削除しますか？\nこの操作はファイルをごみ箱に入れずに完全削除するため、元に戻せません！\n\n対象ファイル:\n${fileList}${moreFiles}`
+              : `Are you sure you want to DELETE ${filePaths.length} file${filePaths.length === 1 ? '' : 's'} from disk?\nThis will permanently delete the files and cannot be undone!\n\nFiles:\n${fileList}${moreFiles}`,
+            buttons: isJa ? ['削除', 'キャンセル'] : ['Yes', 'No'],
             defaultId: 1,
             cancelId: 1,
           });

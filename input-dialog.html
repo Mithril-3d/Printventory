@@ -74,9 +74,14 @@
     <button class="ok" id="ok-btn" type="button">OK</button>
   </div>
   <script>
+    const lang = localStorage.getItem('printventory_lang') || 'ja';
+    if (lang === 'ja') {
+      document.getElementById('cancel-btn').textContent = 'キャンセル';
+      document.getElementById('ok-btn').textContent = 'OK';
+    }
     const params = new URLSearchParams(window.location.search);
     const input = document.getElementById('input-field');
-    document.getElementById('message').textContent = params.get('message') || 'Enter value:';
+    document.getElementById('message').textContent = params.get('message') || (lang === 'ja' ? '入力してください:' : 'Enter value:');
     input.placeholder = params.get('placeholder') || '';
     input.value = params.get('defaultValue') || '';
 

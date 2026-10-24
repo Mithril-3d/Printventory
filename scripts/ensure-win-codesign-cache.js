@@ -15,7 +15,10 @@ const ZIP_URL =
 
 function cacheIsReady(cacheRoot) {
   if (!fs.existsSync(cacheRoot)) return false;
-  return fs.existsSync(path.join(cacheRoot, 'rcedit-x64.exe'));
+  return (
+    fs.existsSync(path.join(cacheRoot, 'rcedit-x64.exe')) &&
+    fs.existsSync(path.join(cacheRoot, 'signtool.exe'))
+  );
 }
 
 function runPowerShell(script) {
@@ -64,6 +67,7 @@ function main() {
     `if (-not (Test-Path '${archiveRoot.replace(/'/g, "''")}')) { throw "Unexpected archive layout: ${archiveRoot.replace(/'/g, "''")}" }`,
     `New-Item -ItemType Directory -Force -Path '${cacheRoot.replace(/'/g, "''")}' | Out-Null`,
     `Copy-Item -Path '${archiveRoot.replace(/'/g, "''")}\\*' -Destination '${cacheRoot.replace(/'/g, "''")}' -Recurse -Force`,
+    `Copy-Item -Path '${archiveRoot.replace(/'/g, "''")}\\windows-10\\x64\\*' -Destination '${cacheRoot.replace(/'/g, "''")}' -Recurse -Force`,
   ].join('; ');
 
   try {

@@ -31,9 +31,9 @@
   <!-- Local vendor copies — CDN scripts blocked first paint / ready-to-show on cold install -->
   <script src="vendor/fuse.min.js"></script>
   <script src="vendor/chart.umd.js"></script>
-  <!-- Puter.js is loaded dynamically only when needed to avoid unnecessary socket.io connections -->
-
-
+  <script src="locales/ja.js"></script>
+  <script src="locales/en.js"></script>
+  <script src="i18n.js"></script>
 </head>
 
 
@@ -135,25 +135,25 @@
       <div id="total-count" class="model-count">0 models total</div>
     </div>
     <div class="icon-buttons-container">
-      <button id="dup-button" class="icon-button" title="De-Dup">
+      <button id="dup-button" class="icon-button" title="重複検出" data-i18n-title="toolbar.dedup">
         <img src="dup.png" alt="De-Dup">
       </button>
-      <button id="tag-button" class="icon-button" title="Tag - Tag Manager">
+      <button id="tag-button" class="icon-button" title="タグマネージャー" data-i18n-title="toolbar.tagManager">
         <img src="tag.png" alt="Tag Manager">
       </button>
-      <button id="filament-button" class="icon-button" title="Filament - Filament Manager">
+      <button id="filament-button" class="icon-button" title="フィラメントマネージャー" data-i18n-title="toolbar.filamentManager">
         <img src="filament.png" alt="Filament Manager">
       </button>
-      <button id="printer-button" class="icon-button" title="Printer - Printer Manager">
+      <button id="printer-button" class="icon-button" title="プリンターマネージャー" data-i18n-title="toolbar.printerManager">
         <img src="printer.png" alt="Printer Manager">
       </button>
-      <button id="roulette-button" class="icon-button" title="Roulette - Print Roulette">
+      <button id="roulette-button" class="icon-button" title="プリントルーレット" data-i18n-title="toolbar.printRoulette">
         <img src="roulette.png" alt="Print Roulette">
       </button>
     </div>
-    <button id="scan-directory-button">Scan Directory</button>
-    <button id="scan-stl-home-button" class="secondary-button" style="display: none;">Scan STL Home</button>
-    <button id="view-library-button">View Entire Library</button>
+    <button id="scan-directory-button" data-i18n="sidebar.scanDirectory">ディレクトリをスキャン</button>
+    <button id="scan-stl-home-button" class="secondary-button" style="display: none;" data-i18n="sidebar.scanStlHome">STLホームをスキャン</button>
+    <button id="view-library-button" data-i18n="sidebar.viewEntireLibrary">ライブラリ全体を表示</button>
     <div id="view-library-message" class="library-view-banner">
       <!-- Updated text will appear here -->
     </div>
@@ -166,250 +166,249 @@
         <div class="progress-bar" id="render-progress-bar"></div>
         <div class="progress-text" id="render-progress-text"></div>
       </div>
-      <button id="stop-thumbnail-generation" class="stop-button" title="Stop thumbnail generation">Stop Processing</button>
-      <div class="performance-notice">Scanning may impact performance.</div>
+      <button id="stop-thumbnail-generation" class="stop-button" title="サムネイル生成を停止" data-i18n-title="sidebar.stopProcessing" data-i18n="sidebar.stopProcessing">処理を停止</button>
+      <div class="performance-notice" data-i18n="sidebar.scanningNotice">スキャン処理中は動作が重くなる場合があります。</div>
     </div>
     </div>
     <div id="current-filter">
       <div id="current-filter-body"></div>
       <div id="search-boolean-toolbar" class="search-boolean-toolbar query-builder-control" hidden>
-        <span class="search-boolean-toolbar-label">Search logic:</span>
-        <a href="#" id="search-add-and-btn" class="search-boolean-op-link" title="Add AND to the query, then choose your next search or filter">AND</a>
+        <span class="search-boolean-toolbar-label" data-i18n="sidebar.searchLogic">検索条件:</span>
+        <a href="#" id="search-add-and-btn" class="search-boolean-op-link" title="クエリにANDを追加">AND</a>
         <span class="search-boolean-op-sep" aria-hidden="true">·</span>
-        <a href="#" id="search-add-or-btn" class="search-boolean-op-link" title="Add OR to the query, then choose your next search or filter">OR</a>
+        <a href="#" id="search-add-or-btn" class="search-boolean-op-link" title="クエリにORを追加">OR</a>
         <span class="search-boolean-op-sep" aria-hidden="true">·</span>
-        <a href="#" id="search-add-not-btn" class="search-boolean-op-link" title="Add NOT before the next search term">NOT</a>
-        <span id="search-boolean-hint" class="search-boolean-hint" hidden>Next: enter another search and press search, or pick a filter below.</span>
+        <a href="#" id="search-add-not-btn" class="search-boolean-op-link" title="クエリにNOTを追加">NOT</a>
+        <span id="search-boolean-hint" class="search-boolean-hint" hidden>次に入力して検索するか、下のフィルターを選択してください。</span>
       </div>
-      <button type="button" id="clear-all-filters-button" class="clear-filter-button" hidden>Clear All Filters</button>
+      <button type="button" id="clear-all-filters-button" class="clear-filter-button" hidden data-i18n="sidebar.clearAllFilters">すべてのフィルターを解除</button>
     </div>
     <div class="filter-section">
       <div class="filter-pinned">
       <div class="form-group search-models-field">
-        <label for="search-filter-input">Search Models:</label>
+        <label for="search-filter-input" data-i18n="sidebar.searchModels">モデルを検索:</label>
         <div class="input-with-icon">
-          <input type="search" id="search-filter-input" placeholder="Search models" enterkeyhint="search" autocomplete="off">
-          <button id="filter-search-button" class="icon-button" title="Add this text to the active query (all fields)">🔍</button>
-          <button id="clear-filter-search-button" class="icon-button" title="Clear search">×</button>
+          <input type="search" id="search-filter-input" placeholder="モデル名やキーワードを検索" enterkeyhint="search" autocomplete="off" data-i18n-placeholder="sidebar.searchPlaceholder">
+          <button id="filter-search-button" class="icon-button" title="検索クエリに追加 (全項目対象)" data-i18n-title="sidebar.searchButtonTitle">🔍</button>
+          <button id="clear-filter-search-button" class="icon-button" title="検索をクリア" data-i18n-title="sidebar.clearSearchTitle">×</button>
         </div>
-        <label class="search-notes-toggle" title="Include notes in all-fields search. Turn off to skip long imported descriptions. A search limited to the Notes field still matches notes.">
+        <label class="search-notes-toggle" title="全項目検索にメモを含めます。オフにすると長い説明文をスキップします。" data-i18n-title="sidebar.includeNotesTitle">
           <input type="checkbox" id="search-include-notes" checked>
-          <span>Include Notes</span>
+          <span data-i18n="sidebar.includeNotes">メモを含める</span>
         </label>
       </div>
       <div class="form-group">
-        <label for="sort-select">Sort By:</label>
+        <label for="sort-select" data-i18n="sidebar.sortBy">並び替え:</label>
         <select id="sort-select">
-          <option value="name-asc">Name (A-Z)</option>
-          <option value="name-desc">Name (Z-A)</option>
-          <option value="size-asc">Size (Smallest First)</option>
-          <option value="size-desc">Size (Largest First)</option>
-          <option value="date-asc">Modified (Oldest First)</option>
-          <option value="date-desc" selected>Modified (Newest First)</option>
-          <option value="dateadded-asc">Date Added (Oldest First)</option>
-          <option value="dateadded-desc">Date Added (Newest First)</option>
-          <option value="directory-asc">Parent Directory (A-Z)</option>
-          <option value="directory-desc">Parent Directory (Z-A)</option>
-          <option value="designer-asc">Designer (A-Z)</option>
-          <option value="designer-desc">Designer (Z-A)</option>
-          <option value="parentmodel-asc">Parent Model (A-Z)</option>
-          <option value="parentmodel-desc">Parent Model (Z-A)</option>
-          <option value="printed-asc">Printed (Not Printed First)</option>
-          <option value="printed-desc">Printed (Printed First)</option>
-          <option value="printstatus-asc">Print Status (Printing First)</option>
-          <option value="printstatus-desc">Print Status (Unprinted First)</option>
-          <option value="printcount-desc">Print Count (Most First)</option>
-          <option value="printcount-asc">Print Count (Least First)</option>
-          <option value="lastprinted-desc">Last Printed (Newest First)</option>
-          <option value="lastprinted-asc">Last Printed (Oldest First)</option>
-          <option value="rating-desc">Rating (Highest First)</option>
-          <option value="rating-asc">Rating (Lowest First)</option>
+          <option value="name-asc" data-i18n="sort.nameAsc">名前 (A-Z / 昇順)</option>
+          <option value="name-desc" data-i18n="sort.nameDesc">名前 (Z-A / 降順)</option>
+          <option value="size-asc" data-i18n="sort.sizeAsc">ファイルサイズ (小さい順)</option>
+          <option value="size-desc" data-i18n="sort.sizeDesc">ファイルサイズ (大きい順)</option>
+          <option value="date-asc" data-i18n="sort.dateAsc">更新日時 (古い順)</option>
+          <option value="date-desc" selected data-i18n="sort.dateDesc">更新日時 (新しい順)</option>
+          <option value="dateadded-asc" data-i18n="sort.dateaddedAsc">追加日時 (古い順)</option>
+          <option value="dateadded-desc" data-i18n="sort.dateaddedDesc">追加日時 (新しい順)</option>
+          <option value="directory-asc" data-i18n="sort.directoryAsc">親ディレクトリ (A-Z)</option>
+          <option value="directory-desc" data-i18n="sort.directoryDesc">親ディレクトリ (Z-A)</option>
+          <option value="designer-asc" data-i18n="sort.designerAsc">デザイナー名 (A-Z)</option>
+          <option value="designer-desc" data-i18n="sort.designerDesc">デザイナー名 (Z-A)</option>
+          <option value="parentmodel-asc" data-i18n="sort.parentmodelAsc">親モデル名 (A-Z)</option>
+          <option value="parentmodel-desc" data-i18n="sort.parentmodelDesc">親モデル名 (Z-A)</option>
+          <option value="printed-asc" data-i18n="sort.printedAsc">印刷ステータス (未印刷優先)</option>
+          <option value="printed-desc" data-i18n="sort.printedDesc">印刷ステータス (印刷済み優先)</option>
+          <option value="printstatus-asc" data-i18n="sort.printstatusAsc">ステータス (印刷中優先)</option>
+          <option value="printstatus-desc" data-i18n="sort.printstatusDesc">ステータス (未印刷優先)</option>
+          <option value="printcount-desc" data-i18n="sort.printcountDesc">印刷回数 (多い順)</option>
+          <option value="printcount-asc" data-i18n="sort.printcountAsc">印刷回数 (少ない順)</option>
+          <option value="lastprinted-desc" data-i18n="sort.lastprintedDesc">最終印刷日 (新しい順)</option>
+          <option value="lastprinted-asc" data-i18n="sort.lastprintedAsc">最終印刷日 (古い順)</option>
+          <option value="rating-desc" data-i18n="sort.ratingDesc">評価 (高い順)</option>
+          <option value="rating-asc" data-i18n="sort.ratingAsc">評価 (低い順)</option>
         </select>
       </div>
       <div class="form-group">
-        <label for="folder-select">Folders:</label>
+        <label for="folder-select" data-i18n="sidebar.folders">フォルダ:</label>
         <div class="dropdown-with-list">
           <select id="folder-select">
-            <option value="">All folders</option>
+            <option value="" data-i18n="sidebar.allFolders">すべてのフォルダ</option>
           </select>
-          <button type="button" id="folder-tree-button" class="list-button icon-button folder-tree-button" title="Browse folder tree">☰</button>
+          <button type="button" id="folder-tree-button" class="list-button icon-button folder-tree-button" title="フォルダツリーを表示" data-i18n-title="sidebar.browseFolderTree">☰</button>
         </div>
       </div>
       </div>
       <button type="button" id="filter-stack-toggle" class="filter-stack-toggle" aria-expanded="false" aria-controls="filter-stack">
-        <span class="filter-stack-toggle-label">More filters</span>
+        <span class="filter-stack-toggle-label" data-i18n="sidebar.moreFilters">詳細フィルター</span>
         <span class="filter-stack-toggle-chevron" aria-hidden="true">▸</span>
       </button>
       <div id="filter-stack" class="filter-stack">
       <div class="form-group">
-        <label for="designer-select">Select Designer:</label>
+        <label for="designer-select" data-i18n="sidebar.selectDesigner">デザイナー:</label>
         <div class="dropdown-with-list">
           <select id="designer-select">
-            <option value="">All Designers</option>
+            <option value="" data-i18n="sidebar.allDesigners">すべてのデザイナー</option>
           </select>
-          <button type="button" class="list-button icon-button" data-field="designer" data-target="designer-select" title="Search existing designers">☰</button>
+          <button type="button" class="list-button icon-button" data-field="designer" data-target="designer-select" title="既存のデザイナーを検索" data-i18n-title="sidebar.searchDesignersTitle">☰</button>
         </div>
         <div id="designer-filter-chips" class="filter-multi-chips" hidden></div>
         <div id="designer-combine-row" class="filter-combine-row query-builder-control" hidden>
-          <span class="filter-combine-label">Match:</span>
-          <label><input type="radio" name="designer-combine" value="OR" checked> Any</label>
-          <label><input type="radio" name="designer-combine" value="AND"> All</label>
+          <span class="filter-combine-label" data-i18n="sidebar.searchLogic">条件:</span>
+          <label><input type="radio" name="designer-combine" value="OR" checked> <span data-i18n="sidebar.matchAny">いずれか</span></label>
+          <label><input type="radio" name="designer-combine" value="AND"> <span data-i18n="sidebar.matchAll">すべて</span></label>
         </div>
       </div>
 
       <div class="form-group">
-        <label for="parent-select">Select Parent Model:</label>
+        <label for="parent-select" data-i18n="sidebar.selectParent">親モデル:</label>
         <div class="dropdown-with-list">
           <select id="parent-select">
-            <option value="">All Parent Models</option>
+            <option value="" data-i18n="sidebar.allParents">すべての親モデル</option>
           </select>
-          <button type="button" class="list-button icon-button" data-field="parent" data-target="parent-select" title="Search existing parent models">☰</button>
+          <button type="button" class="list-button icon-button" data-field="parent" data-target="parent-select" title="既存の親モデルを検索" data-i18n-title="sidebar.searchParentsTitle">☰</button>
         </div>
         <div id="parentModel-filter-chips" class="filter-multi-chips" hidden></div>
         <div id="parentModel-combine-row" class="filter-combine-row query-builder-control" hidden>
-          <span class="filter-combine-label">Match:</span>
-          <label><input type="radio" name="parentModel-combine" value="OR" checked> Any</label>
-          <label><input type="radio" name="parentModel-combine" value="AND"> All</label>
+          <span class="filter-combine-label" data-i18n="sidebar.searchLogic">条件:</span>
+          <label><input type="radio" name="parentModel-combine" value="OR" checked> <span data-i18n="sidebar.matchAny">いずれか</span></label>
+          <label><input type="radio" name="parentModel-combine" value="AND"> <span data-i18n="sidebar.matchAll">すべて</span></label>
         </div>
       </div>
       <div class="form-group">
-        <label for="license-select">Select License:</label>
+        <label for="license-select" data-i18n="sidebar.selectLicense">ライセンス:</label>
         <div class="dropdown-with-list">
           <select id="license-select">
-            <option value="">All Licenses</option>
+            <option value="" data-i18n="sidebar.allLicenses">すべてのライセンス</option>
           </select>
-          <button type="button" class="list-button icon-button" data-field="license" data-target="license-select" title="Search existing licenses">☰</button>
+          <button type="button" class="list-button icon-button" data-field="license" data-target="license-select" title="既存のライセンスを検索" data-i18n-title="sidebar.searchLicensesTitle">☰</button>
         </div>
         <div id="license-filter-chips" class="filter-multi-chips" hidden></div>
         <div id="license-combine-row" class="filter-combine-row query-builder-control" hidden>
-          <span class="filter-combine-label">Match:</span>
-          <label><input type="radio" name="license-combine" value="OR" checked> Any</label>
-          <label><input type="radio" name="license-combine" value="AND"> All</label>
+          <span class="filter-combine-label" data-i18n="sidebar.searchLogic">条件:</span>
+          <label><input type="radio" name="license-combine" value="OR" checked> <span data-i18n="sidebar.matchAny">いずれか</span></label>
+          <label><input type="radio" name="license-combine" value="AND"> <span data-i18n="sidebar.matchAll">すべて</span></label>
         </div>
       </div>
       <div class="form-group">
-        <label for="printed-select">Print Status:</label>
+        <label for="printed-select" data-i18n="sidebar.printStatus">印刷ステータス:</label>
         <select id="printed-select">
-          <option value="all">All Models</option>
-          <option value="unprinted">Unprinted</option>
-          <option value="want">Want</option>
-          <option value="queued">Queued</option>
-          <option value="printing">Printing</option>
-          <option value="printed">Printed</option>
-          <option value="failed">Failed</option>
-          <option value="ever-printed">Ever printed</option>
-          <option value="never-printed">Never printed</option>
-          <option value="not-printed">Not printed</option>
+          <option value="all" data-i18n="status.all">すべてのモデル</option>
+          <option value="unprinted" data-i18n="status.unprinted">未印刷</option>
+          <option value="want" data-i18n="status.want">印刷したい (Want)</option>
+          <option value="queued" data-i18n="status.queued">キュー追加済み</option>
+          <option value="printing" data-i18n="status.printing">印刷中</option>
+          <option value="printed" data-i18n="status.printed">印刷完了</option>
+          <option value="failed" data-i18n="status.failed">失敗</option>
+          <option value="ever-printed" data-i18n="status.everPrinted">印刷履歴あり</option>
+          <option value="never-printed">未印刷のみ (Never printed)</option>
+          <option value="not-printed">未印刷 (Not printed)</option>
         </select>
       </div>
       <div class="form-group">
-        <label for="new-select">New Status:</label>
+        <label for="new-select" data-i18n="sidebar.newStatus">新規モデル判定:</label>
         <select id="new-select">
-          <option value="all">All Models</option>
-          <option value="new">New Models Only</option>
-          <option value="not-new">Exclude New Models</option>
+          <option value="all" data-i18n="sidebar.allNewModels">すべてのモデル</option>
+          <option value="new" data-i18n="sidebar.newOnly">新規モデルのみ</option>
+          <option value="not-new" data-i18n="sidebar.excludeNew">新規モデルを除外</option>
         </select>
       </div>
       <div class="form-group">
-        <label for="favorite-select">Favorite:</label>
+        <label for="favorite-select" data-i18n="sidebar.favorite">お気に入り:</label>
         <select id="favorite-select">
-          <option value="all">All Models</option>
-          <option value="favorited">Favorites</option>
-          <option value="not-favorited">Not Favorites</option>
+          <option value="all" data-i18n="sidebar.allFavorites">すべてのモデル</option>
+          <option value="favorited" data-i18n="sidebar.favorited">お気に入りのみ</option>
+          <option value="not-favorited" data-i18n="sidebar.notFavorited">お気に入り以外</option>
         </select>
       </div>
       <div class="form-group">
-        <label for="rating-select">Rating:</label>
+        <label for="rating-select" data-i18n="sidebar.rating">評価:</label>
         <select id="rating-select">
-          <option value="all">All Ratings</option>
-          <option value="unrated">Unrated</option>
-          <option value="1">1 Star</option>
-          <option value="2">2 Stars</option>
-          <option value="3">3 Stars</option>
-          <option value="4">4 Stars</option>
-          <option value="5">5 Stars</option>
+          <option value="all" data-i18n="sidebar.allRatings">すべての評価</option>
+          <option value="unrated" data-i18n="sidebar.unrated">未評価</option>
+          <option value="1">★ 1</option>
+          <option value="2">★★ 2</option>
+          <option value="3">★★★ 3</option>
+          <option value="4">★★★★ 4</option>
+          <option value="5">★★★★★ 5</option>
         </select>
       </div>
       <div class="form-group">
-        <label for="rating-min-select">Min Rating:</label>
+        <label for="rating-min-select" data-i18n="sidebar.minRating">最低評価:</label>
         <select id="rating-min-select">
-          <option value="all">All</option>
-          <option value="1">At Least 1</option>
-          <option value="2">At Least 2</option>
-          <option value="3">At Least 3</option>
-          <option value="4">At Least 4</option>
-          <option value="5">At Least 5</option>
+          <option value="all" data-i18n="sidebar.allRatings">すべて</option>
+          <option value="1">★ 1 以上</option>
+          <option value="2">★★ 2 以上</option>
+          <option value="3">★★★ 3 以上</option>
+          <option value="4">★★★★ 4 以上</option>
+          <option value="5">★★★★★ 5</option>
         </select>
       </div>
       <div class="form-group">
-        <label for="filetype-select">File Type:</label>
+        <label for="filetype-select" data-i18n="sidebar.fileType">ファイル形式:</label>
         <select id="filetype-select">
-          <option value="">All Types</option>
+          <option value="" data-i18n="sidebar.allTypes">すべての形式</option>
           <option value="stl">STL</option>
           <option value="3mf">3MF</option>
-          <!-- Zip and additional types are added by populateFileTypeFilter() from settings -->
         </select>
       </div>
       <div class="form-group">
-        <label for="tag-filter">Filter by Tag:</label>
+        <label for="tag-filter" data-i18n="sidebar.filterByTag">タグで絞り込み:</label>
         <div class="dropdown-with-list">
           <div class="tags-input-container">
             <select id="tag-filter">
-              <option value="">All Tags</option>
+              <option value="" data-i18n="sidebar.allTags">すべてのタグ</option>
             </select>
           </div>
-          <button type="button" class="list-button icon-button" data-field="tag" data-target="tag-filter" title="Search existing tags">☰</button>
+          <button type="button" class="list-button icon-button" data-field="tag" data-target="tag-filter" title="既存のタグを検索">☰</button>
         </div>
         <div id="tags-filter-chips" class="filter-multi-chips" hidden></div>
         <div id="tags-combine-row" class="filter-combine-row query-builder-control" hidden>
-          <span class="filter-combine-label">Match:</span>
-          <label><input type="radio" name="tags-combine" value="OR"> Any tag</label>
-          <label><input type="radio" name="tags-combine" value="AND" checked> All tags</label>
+          <span class="filter-combine-label" data-i18n="sidebar.searchLogic">条件:</span>
+          <label><input type="radio" name="tags-combine" value="OR"> <span data-i18n="sidebar.matchAny">いずれかのタグ</span></label>
+          <label><input type="radio" name="tags-combine" value="AND" checked> <span data-i18n="sidebar.matchAll">すべてのタグ</span></label>
         </div>
       </div>
 
       <div class="form-group">
-        <label for="filament-filter">Filter by Filament:</label>
+        <label for="filament-filter" data-i18n="sidebar.filterByFilament">フィラメントで絞り込み:</label>
         <div class="dropdown-with-list">
           <div class="tags-input-container">
             <select id="filament-filter">
-              <option value="">All Filaments</option>
+              <option value="" data-i18n="sidebar.allFilaments">すべてのフィラメント</option>
             </select>
           </div>
-          <button type="button" class="list-button icon-button" data-field="filament" data-target="filament-filter" title="Search existing filaments">☰</button>
+          <button type="button" class="list-button icon-button" data-field="filament" data-target="filament-filter" title="既存のフィラメントを検索">☰</button>
         </div>
         <div id="filaments-filter-chips" class="filter-multi-chips" hidden></div>
         <div id="filaments-combine-row" class="filter-combine-row query-builder-control" hidden>
-          <span class="filter-combine-label">Match:</span>
-          <label><input type="radio" name="filaments-combine" value="OR"> Any filament</label>
-          <label><input type="radio" name="filaments-combine" value="AND" checked> All filaments</label>
+          <span class="filter-combine-label" data-i18n="sidebar.searchLogic">条件:</span>
+          <label><input type="radio" name="filaments-combine" value="OR"> <span data-i18n="sidebar.matchAny">いずれかのフィラメント</span></label>
+          <label><input type="radio" name="filaments-combine" value="AND" checked> <span data-i18n="sidebar.matchAll">すべてのフィラメント</span></label>
         </div>
       </div>
 
       <div class="form-group">
-        <button type="button" id="invert-filter-button" title="Invert the current filter (NOT equal instead of equal)">Invert Filters</button>
+        <button type="button" id="invert-filter-button" title="現在のフィルター条件を反転します" data-i18n="sidebar.invertFilters">フィルター条件を反転</button>
       </div>
 
       <div class="form-group">
-        <button id="edit-mode-toggle">Multi-Edit Mode</button>
+        <button id="edit-mode-toggle" data-i18n="sidebar.multiEditMode">一括編集モード</button>
       </div>
       </div>
     </div>
 
     <div id="model-details" class="model-details hidden">
-      <h3><span class="mobile-sheet-grab" aria-hidden="true"></span><span class="mobile-details-heading">Model Details</span><span class="mobile-details-name" id="mobile-details-name" hidden></span><button type="button" class="mobile-panel-close" data-mobile-close-details aria-label="Close details">×</button><span class="mobile-details-actions"><button type="button" class="mobile-details-preview-btn" id="mobile-details-open-preview" aria-label="View in 3D"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.2 20.5 7v10L12 21.8 3.5 17V7L12 2.2zm0 2.3L6 8.2v6.3l6 3.4 6-3.4V8.2L12 4.5z"/></svg><span>3D</span></button><button type="button" class="mobile-details-preview-btn" id="mobile-details-favorite" aria-pressed="false" aria-label="Favorite"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 20.2s-6.8-4.3-9.2-8.2C1 9.2 2.2 5.8 5.6 5.2 7.6 4.8 9.4 5.8 12 8.2c2.6-2.4 4.4-3.4 6.4-3 3.4.6 4.6 4 2.8 6.8-2.4 3.9-9.2 8.2-9.2 8.2z"/></svg><span class="mobile-action-label">Favorite</span></button><button type="button" class="mobile-details-preview-btn" id="mobile-details-log-print" aria-label="Log a print"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M6 3h9l3 3v15H6V3zm8 1.5V7h2.5L14 4.5zM8 11h8v1.8H8V11zm0 3.2h8v1.8H8v-1.8zM8 17.4h5.2V19H8v-1.6z"/></svg><span>Log print</span></button></span></h3>
+      <h3><span class="mobile-sheet-grab" aria-hidden="true"></span><span class="mobile-details-heading" data-i18n="sidebar.modelDetails">モデル詳細</span><span class="mobile-details-name" id="mobile-details-name" hidden></span><button type="button" class="mobile-panel-close" data-mobile-close-details aria-label="詳細を閉じる">×</button><span class="mobile-details-actions"><button type="button" class="mobile-details-preview-btn" id="mobile-details-open-preview" aria-label="3D表示"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.2 20.5 7v10L12 21.8 3.5 17V7L12 2.2zm0 2.3L6 8.2v6.3l6 3.4 6-3.4V8.2L12 4.5z"/></svg><span>3D</span></button><button type="button" class="mobile-details-preview-btn" id="mobile-details-favorite" aria-pressed="false" aria-label="お気に入り"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 20.2s-6.8-4.3-9.2-8.2C1 9.2 2.2 5.8 5.6 5.2 7.6 4.8 9.4 5.8 12 8.2c2.6-2.4 4.4-3.4 6.4-3 3.4.6 4.6 4 2.8 6.8-2.4 3.9-9.2 8.2-9.2 8.2z"/></svg><span class="mobile-action-label" data-i18n="sidebar.favorite">お気に入り</span></button><button type="button" class="mobile-details-preview-btn" id="mobile-details-log-print" aria-label="印刷を記録"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M6 3h9l3 3v15H6V3zm8 1.5V7h2.5L14 4.5zM8 11h8v1.8H8V11zm0 3.2h8v1.8H8v-1.8zM8 17.4h5.2V19H8v-1.6z"/></svg><span data-i18n="model.reprints">印刷記録</span></button></span></h3>
       <div class="form-group print-lifecycle-group">
-        <label for="model-print-status">Print status</label>
+        <label for="model-print-status" data-i18n="sidebar.printStatus">印刷ステータス</label>
         <div class="print-lifecycle-controls">
           <select id="model-print-status">
-            <option value="unprinted">Not printed</option>
-            <option value="want">Want</option>
-            <option value="queued">Queued</option>
-            <option value="printing">Printing</option>
-            <option value="printed">Printed</option>
-            <option value="failed">Failed</option>
+            <option value="unprinted" data-i18n="status.unprinted">未印刷</option>
+            <option value="want" data-i18n="status.want">印刷したい (Want)</option>
+            <option value="queued" data-i18n="status.queued">キュー追加済み</option>
+            <option value="printing" data-i18n="status.printing">印刷中</option>
+            <option value="printed" data-i18n="status.printed">印刷完了</option>
+            <option value="failed" data-i18n="status.failed">失敗</option>
           </select>
-          <button type="button" id="log-print-button" class="icon-button log-print-icon-button" title="Log a print" aria-label="Log a print">
+          <button type="button" id="log-print-button" class="icon-button log-print-icon-button" title="印刷を記録" aria-label="印刷を記録">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
               <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.992 11h3.5m-3.5-4h7m-11-1h-3m3 6h-3m3 6h-3m6 3.939c-1.581-.103-2.595-.377-3.328-1.11C4.492 19.656 4.492 17.77 4.492 14v-4c0-3.771 0-5.657 1.172-6.828S8.72 2 12.492 2h.5c3.771 0 5.657 0 6.829 1.172S20.992 6.229 20.992 10v.5m-1.136 3.94l.695.692a1.496 1.496 0 0 1 0 2.12L16.91 20.95a2 2 0 0 1-1.05.551l-2.258.488a.5.5 0 0 1-.597-.593l.48-2.235c.074-.397.268-.762.554-1.047l3.688-3.674a1.51 1.51 0 0 1 2.13 0" />
             </svg>
@@ -417,101 +416,101 @@
         </div>
         <p id="print-history-hint" class="print-history-hint"></p>
       </div>
-      <button type="button" id="mobile-details-more" aria-expanded="false">More details</button>
+      <button type="button" id="mobile-details-more" aria-expanded="false">詳細を表示</button>
       <div class="form-group mobile-detail-skip">
-        <label for="model-name">Name:</label>
+        <label for="model-name" data-i18n="model.fileName">ファイル名:</label>
         <input type="text" id="model-name" readonly>
       </div>
       <div class="form-group mobile-detail-extra">
-        <label for="model-path">Path:</label>
+        <label for="model-path" data-i18n="model.filePath">パス:</label>
         <div class="path-tree-field">
           <div id="path-tree-container" class="path-tree-container"></div>
-          <button type="button" id="reveal-in-folders-button" class="icon-button" title="Reveal in folders">☰</button>
+          <button type="button" id="reveal-in-folders-button" class="icon-button" title="フォルダで表示">☰</button>
         </div>
       </div>
       <div class="form-group mobile-detail-extra">
-        <label for="model-source">Source URL:</label>
+        <label for="model-source" data-i18n="model.sourceUrl">入手先URL:</label>
         <div class="input-with-icon">
-          <input type="text" id="model-source" placeholder="Enter source..." spellcheck="false">
-          <button id="open-source-button" class="icon-button" title="Open in browser">↗</button>
+          <input type="text" id="model-source" placeholder="入手先URLを入力..." spellcheck="false">
+          <button id="open-source-button" class="icon-button" title="ブラウザで開く">↗</button>
         </div>
       </div>
 
       <div class="form-group mobile-detail-extra">
-        <label for="model-designer">Designer:</label>
+        <label for="model-designer" data-i18n="model.designer">デザイナー:</label>
         <div class="designer-input-container">
           <select id="model-designer">
-            <option value="Unknown">Unknown</option>
+            <option value="Unknown">不明 (Unknown)</option>
           </select>
-          <button type="button" class="list-button icon-button" data-field="designer" data-target="model-designer" data-mode="edit" title="Search existing designers">☰</button>
+          <button type="button" class="list-button icon-button" data-field="designer" data-target="model-designer" data-mode="edit" title="既存のデザイナーを検索">☰</button>
           <button type="button" id="add-new-designer-button" class="icon-button">+</button>
         </div>
       </div>
       <div class="form-group mobile-detail-extra">
-        <label for="model-parent">Parent Model:</label>
+        <label for="model-parent" data-i18n="model.parentModel">親モデル:</label>
         <div class="designer-input-container">
           <select id="model-parent">
-            <option value="">None</option>
+            <option value="">なし (None)</option>
           </select>
-          <button type="button" class="list-button icon-button" data-field="parent" data-target="model-parent" data-mode="edit" title="Search existing parent models">☰</button>
+          <button type="button" class="list-button icon-button" data-field="parent" data-target="model-parent" data-mode="edit" title="既存の親モデルを検索">☰</button>
           <button type="button" id="add-new-parent-button" class="icon-button">+</button>
         </div>
       </div>
 
       <div class="form-group mobile-detail-extra">
-        <label for="model-license">License:</label>
+        <label for="model-license" data-i18n="model.license">ライセンス:</label>
         <div class="designer-input-container">
           <select id="model-license" class="form-control"></select>
-          <button type="button" class="list-button icon-button" data-field="license" data-target="model-license" data-mode="edit" title="Search existing licenses">☰</button>
+          <button type="button" class="list-button icon-button" data-field="license" data-target="model-license" data-mode="edit" title="既存のライセンスを検索">☰</button>
           <button type="button" id="add-new-license-button" class="icon-button">+</button>
         </div>
       </div>
       <div class="form-group">
-        <label>Tags:</label>
+        <label data-i18n="model.tags">タグ:</label>
         <div class="tags-container">
           <div class="tags-input-container">
             <select id="tag-select">
-              <option value="">Select a tag...</option>
+              <option value="">タグを選択...</option>
             </select>
-            <button type="button" class="list-button icon-button" data-field="tag" data-target="tag-select" data-mode="edit" data-container="model-tags" title="Search existing tags">☰</button>
+            <button type="button" class="list-button icon-button" data-field="tag" data-target="tag-select" data-mode="edit" data-container="model-tags" title="既存のタグを検索">☰</button>
             <button type="button" id="add-tag-button" class="icon-button">+</button>
           </div>
           <div id="model-tags" class="tags-list"></div>
         </div>
       </div>
       <div class="form-group">
-        <label>Filament:</label>
+        <label data-i18n="model.filaments">フィラメント:</label>
         <div class="tags-container">
           <div class="tags-input-container">
             <select id="filament-select">
-              <option value="">Select a filament...</option>
+              <option value="">フィラメントを選択...</option>
             </select>
-            <button type="button" class="list-button icon-button" data-field="filament" data-target="filament-select" data-mode="edit" data-container="model-filaments" title="Search existing filaments">☰</button>
-            <button type="button" id="add-filament-button" class="icon-button" title="Filament Manager">+</button>
+            <button type="button" class="list-button icon-button" data-field="filament" data-target="filament-select" data-mode="edit" data-container="model-filaments" title="既存のフィラメントを検索">☰</button>
+            <button type="button" id="add-filament-button" class="icon-button" title="フィラメントマネージャー">+</button>
           </div>
           <div id="model-filaments" class="tags-list"></div>
         </div>
       </div>
       <div class="form-group mobile-detail-extra">
-        <label for="model-notes">Notes:</label>
+        <label for="model-notes" data-i18n="model.notes">メモ:</label>
         <div class="notes-input-container">
           <textarea id="model-notes" class="notes-source" aria-hidden="true" tabindex="-1"></textarea>
           <div id="model-notes-preview" class="notes-preview notes-sidebar-preview" aria-label="Notes"></div>
-          <button type="button" id="open-notes-modal-button" class="icon-button" title="Edit notes">✏️</button>
+          <button type="button" id="open-notes-modal-button" class="icon-button" title="メモを編集" data-i18n-title="model.editNotes">✏️</button>
         </div>
       </div>
       <div class="form-group print-history-group">
         <div class="print-history-label-row">
-          <label>Print history</label>
-          <button type="button" id="log-print-history-button" class="icon-button log-print-icon-button" title="Log a print" aria-label="Log a print">
+          <label data-i18n="model.reprints">印刷履歴</label>
+          <button type="button" id="log-print-history-button" class="icon-button log-print-icon-button" title="印刷を記録" aria-label="印刷を記録">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
               <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.992 11h3.5m-3.5-4h7m-11-1h-3m3 6h-3m3 6h-3m6 3.939c-1.581-.103-2.595-.377-3.328-1.11C4.492 19.656 4.492 17.77 4.492 14v-4c0-3.771 0-5.657 1.172-6.828S8.72 2 12.492 2h.5c3.771 0 5.657 0 6.829 1.172S20.992 6.229 20.992 10v.5m-1.136 3.94l.695.692a1.496 1.496 0 0 1 0 2.12L16.91 20.95a2 2 0 0 1-1.05.551l-2.258.488a.5.5 0 0 1-.597-.593l.48-2.235c.074-.397.268-.762.554-1.047l3.688-3.674a1.51 1.51 0 0 1 2.13 0" />
             </svg>
           </button>
         </div>
-        <ul id="print-history-list" class="print-history-list" aria-label="Print history"></ul>
+        <ul id="print-history-list" class="print-history-list" aria-label="印刷履歴"></ul>
       </div>
-      <button id="save-model-button"></button>
+      <button id="save-model-button" data-i18n="action.save">保存</button>
     </div>
 
     <div id="bundle-details" class="model-details bundle-details hidden">
@@ -545,101 +544,101 @@
     </div>
     <dialog id="log-print-dialog" class="modal">
       <form id="log-print-form">
-        <h3 id="log-print-title">Log a print</h3>
-        <p class="setting-description">Creates a history row. Status-only changes use the dropdown or Shift-click on the card badge.</p>
+        <h3 id="log-print-title">印刷を記録</h3>
+        <p class="setting-description">印刷履歴を追加します。ステータスのみの変更はドロップダウンまたはカードバッジのShift+クリックで行えます。</p>
         <div class="form-group">
-          <label for="log-print-when">When</label>
+          <label for="log-print-when">日時</label>
           <input type="datetime-local" id="log-print-when" required>
         </div>
         <div class="form-group">
-          <label for="log-print-outcome">Outcome</label>
+          <label for="log-print-outcome">結果</label>
           <select id="log-print-outcome">
-            <option value="printed">Printed</option>
-            <option value="failed">Failed</option>
-            <option value="cancelled">Cancelled</option>
+            <option value="printed">印刷完了 (Printed)</option>
+            <option value="failed">失敗 (Failed)</option>
+            <option value="cancelled">キャンセル (Cancelled)</option>
           </select>
         </div>
         <div class="form-group">
-          <label for="log-print-quantity">Quantity</label>
+          <label for="log-print-quantity">数量</label>
           <input type="number" id="log-print-quantity" min="1" max="9999" value="1">
         </div>
         <div class="form-group">
-          <label for="log-print-printer-select">Printer used</label>
+          <label for="log-print-printer-select">使用したプリンター</label>
           <select id="log-print-printer-select">
-            <option value="">Select printer (optional)…</option>
+            <option value="">プリンターを選択 (任意)…</option>
           </select>
         </div>
         <div class="form-group">
-          <label for="log-print-filament-select">Filament used</label>
+          <label for="log-print-filament-select">使用したフィラメント</label>
           <select id="log-print-filament-select">
-            <option value="">Add filament…</option>
+            <option value="">フィラメントを追加…</option>
           </select>
           <div id="log-print-filaments" class="tags-list"></div>
         </div>
         <div class="form-group">
-          <label for="log-print-part-select">Parts used</label>
+          <label for="log-print-part-select">使用したパーツ</label>
           <div class="log-print-parts-add">
             <select id="log-print-part-select">
-              <option value="">Add part…</option>
+              <option value="">パーツを追加…</option>
             </select>
-            <input type="number" id="log-print-part-qty" min="1" max="9999" value="1" title="Quantity of this part per copy" aria-label="Quantity per copy">
-            <button type="button" id="log-print-part-add">Add</button>
+            <input type="number" id="log-print-part-qty" min="1" max="9999" value="1" title="1個あたりのパーツ数量" aria-label="1個あたりの数量">
+            <button type="button" id="log-print-part-add" data-i18n="action.add">追加</button>
           </div>
-          <p class="setting-description">Quantity is per copy. Saving removes that many from Parts Stock for every copy and every model in this log.</p>
+          <p class="setting-description">数量は1個あたりです。保存時にこの履歴に含まれる数量がパーツ在庫から減算されます。</p>
           <div id="log-print-parts" class="tags-list"></div>
           <p id="log-print-parts-summary" class="setting-description"></p>
         </div>
         <div class="form-group">
-          <label for="log-print-notes">Notes</label>
-          <textarea id="log-print-notes" placeholder="Optional — layer height, what failed, who it was for"></textarea>
+          <label for="log-print-notes">メモ</label>
+          <textarea id="log-print-notes" placeholder="任意 — 積層ピッチ、失敗原因、用途など"></textarea>
         </div>
         <p id="log-print-status" class="print-history-hint"></p>
         <div class="dialog-buttons">
-          <button type="submit" id="log-print-save">Save</button>
-          <button type="button" id="log-print-cancel">Cancel</button>
+          <button type="submit" id="log-print-save" data-i18n="action.save">保存</button>
+          <button type="button" id="log-print-cancel" data-i18n="action.cancel">キャンセル</button>
         </div>
       </form>
     </dialog>
     <dialog id="new-designer-dialog" class="modal">
       <form method="dialog">
-        <h3>Add New Designer</h3>
+        <h3>新しいデザイナーを追加</h3>
         <div class="form-group">
-          <label for="new-designer-name">Designer Name:</label>
+          <label for="new-designer-name">デザイナー名:</label>
           <input type="text" id="new-designer-name" required>
         </div>
         <div class="dialog-buttons">
-          <button type="submit" id="add-designer-button">Add</button>
-          <button type="button" id="cancel-designer-button" onclick="document.getElementById('new-designer-dialog')?.close()">Cancel</button>
+          <button type="submit" id="add-designer-button" data-i18n="action.add">追加</button>
+          <button type="button" id="cancel-designer-button" onclick="document.getElementById('new-designer-dialog')?.close()" data-i18n="action.cancel">キャンセル</button>
         </div>
       </form>
     </dialog>
     <dialog id="new-parent-dialog" class="modal">
       <form method="dialog">
-        <h3>Add New Parent Model</h3>
+        <h3>新しい親モデルを追加</h3>
         <div class="form-group">
-          <label for="new-parent-name">Parent Model Name:</label>
+          <label for="new-parent-name">親モデル名:</label>
           <input type="text" id="new-parent-name" required>
         </div>
         <div class="dialog-buttons">
-          <button type="submit" id="add-parent-button">Add</button>
-          <button type="button" id="cancel-parent-button" onclick="document.getElementById('new-parent-dialog')?.close()">Cancel</button>
+          <button type="submit" id="add-parent-button" data-i18n="action.add">追加</button>
+          <button type="button" id="cancel-parent-button" onclick="document.getElementById('new-parent-dialog')?.close()" data-i18n="action.cancel">キャンセル</button>
         </div>
       </form>
     </dialog>
     <dialog id="new-tag-dialog" class="modal">
       <form>
-        <h3>Add New Tag</h3>
+        <h3>新しいタグを追加</h3>
         <div class="form-group">
-          <label for="new-tag-name">Tag Name:</label>
+          <label for="new-tag-name">タグ名:</label>
           <div class="input-with-icon">
             <input type="text" id="new-tag-name">
-            <button type="button" id="refresh-tag-input" class="icon-button refresh-button" title="Reset input field (click if field is not editable)" onclick="return resetTagInputField();">↻</button>
+            <button type="button" id="refresh-tag-input" class="icon-button refresh-button" title="入力欄をリセット" onclick="return resetTagInputField();">↻</button>
           </div>
-          <small style="display: block; margin-top: 5px; color: #aaa; font-style: italic;">If field is not editable, click the refresh button or refocus the window.</small>
+          <small style="display: block; margin-top: 5px; color: #aaa; font-style: italic;">入力できない場合は、リフレッシュボタンを押すかウィンドウを再フォーカスしてください。</small>
         </div>
         <div class="dialog-buttons">
-          <button type="submit" id="add-tag-submit">Add</button>
-          <button type="button" id="cancel-tag-button" onclick="document.getElementById('new-tag-dialog')?.close()">Cancel</button>
+          <button type="submit" id="add-tag-submit" data-i18n="action.add">追加</button>
+          <button type="button" id="cancel-tag-button" onclick="document.getElementById('new-tag-dialog')?.close()" data-i18n="action.cancel">キャンセル</button>
         </div>
       </form>
     </dialog>
@@ -659,75 +658,75 @@
     </dialog>
     <dialog id="bulk-edit-dialog" class="modal">
       <form method="dialog">
-        <h3>Edit Selected Models</h3>
+        <h3>選択したモデルの一括編集</h3>
         <div class="form-group">
-          <label for="bulk-designer">Designer:</label>
+          <label for="bulk-designer">デザイナー:</label>
           <div class="designer-input-container">
             <select id="bulk-designer">
-              <option value="">No Change</option>
-              <option value="Unknown">Unknown</option>
+              <option value="">変更なし</option>
+              <option value="Unknown">不明 (Unknown)</option>
             </select>
             <button type="button" id="bulk-add-designer-button" class="icon-button">+</button>
           </div>
         </div>
         <div class="form-group">
-          <label for="bulk-parent">Parent Model:</label>
+          <label for="bulk-parent">親モデル:</label>
           <div class="designer-input-container">
             <select id="bulk-parent">
-              <option value="">No Change</option>
-              <option value="none">None</option>
+              <option value="">変更なし</option>
+              <option value="none">なし (None)</option>
             </select>
             <button type="button" id="bulk-add-parent-button" class="icon-button">+</button>
           </div>
         </div>
         <div class="form-group">
-          <label for="bulk-source">Source:</label>
-          <input type="text" id="bulk-source" placeholder="No Change">
+          <label for="bulk-source">入手先URL:</label>
+          <input type="text" id="bulk-source" placeholder="変更なし">
         </div>
         <div class="form-group">
-          <label for="bulk-printed">Print status:</label>
+          <label for="bulk-printed">印刷ステータス:</label>
           <select id="bulk-printed">
-            <option value="">No Change</option>
-            <option value="unprinted">Not printed</option>
-            <option value="want">Want</option>
-            <option value="queued">Queued</option>
-            <option value="printing">Printing</option>
-            <option value="printed">Printed</option>
-            <option value="failed">Failed</option>
+            <option value="">変更なし</option>
+            <option value="unprinted">未印刷</option>
+            <option value="want">印刷したい (Want)</option>
+            <option value="queued">キュー追加済み</option>
+            <option value="printing">印刷中</option>
+            <option value="printed">印刷完了</option>
+            <option value="failed">失敗</option>
           </select>
         </div>
         <div class="dialog-buttons">
-          <button type="submit" id="bulk-save-button">Save Changes</button>
-          <button type="button" id="bulk-cancel-button" onclick="document.getElementById('bulk-edit-dialog')?.close()">Cancel</button>
+          <button type="submit" id="bulk-save-button" data-i18n="action.save">変更を保存</button>
+          <button type="button" id="bulk-cancel-button" onclick="document.getElementById('bulk-edit-dialog')?.close()" data-i18n="action.cancel">キャンセル</button>
         </div>
       </form>
     </dialog>
     <div id="multi-edit-panel" class="model-details hidden">
-      <h3><span class="mobile-sheet-grab" aria-hidden="true"></span><span class="mobile-details-heading">Multi-Edit Panel</span> <button type="button" class="mobile-panel-close" data-mobile-close-details aria-label="Close details">×</button></h3>
-      <button id="exit-multi-edit-button" class="full-width-button">Exit Multi-Edit Mode</button>
-      <button id="select-all-button" class="full-width-button">Select All Visible</button>
-      <button id="clear-selection-button" class="full-width-button">Clear Selection</button>
-      <p class="selected-count">0 models selected</p>
+      <h3><span class="mobile-sheet-grab" aria-hidden="true"></span><span class="mobile-details-heading">一括編集パネル</span> <button type="button" class="mobile-panel-close" data-mobile-close-details aria-label="詳細を閉じる">×</button></h3>
+      <button id="exit-multi-edit-button" class="full-width-button">一括編集モードを終了</button>
+      <button id="select-all-button" class="full-width-button">表示中の全モデルを選択</button>
+      <button id="clear-selection-button" class="full-width-button">選択を解除</button>
+      <p class="selected-count">0 個のモデルを選択中</p>
       <div class="form-group">
-        <label for="multi-print-status">Print status</label>
+        <label for="multi-print-status">印刷ステータス</label>
         <select id="multi-print-status">
-          <option value="">No change</option>
-          <option value="unprinted">Not printed</option>
-          <option value="want">Want</option>
-          <option value="queued">Queued</option>
-          <option value="printing">Printing</option>
-          <option value="printed">Printed</option>
-          <option value="failed">Failed</option>
+          <option value="">変更なし</option>
+          <option value="unprinted">未印刷</option>
+          <option value="want">印刷したい (Want)</option>
+          <option value="queued">キュー追加済み</option>
+          <option value="printing">印刷中</option>
+          <option value="printed">印刷完了</option>
+          <option value="failed">失敗</option>
         </select>
       </div>
       <div class="form-group">
-        <button type="button" id="multi-log-print-button" class="full-width-button">Log a print on selected</button>
+        <button type="button" id="multi-log-print-button" class="full-width-button">選択したモデルの印刷を記録</button>
       </div>
       <div class="form-group">
-        <label for="multi-source">Source:</label>
+        <label for="multi-source">入手先URL:</label>
         <div class="input-with-icon">
-          <input type="text" id="multi-source" placeholder="Enter source..." spellcheck="false">
-          <button id="multi-open-source-button" class="icon-button" title="Open in browser">↗</button>
+          <input type="text" id="multi-source" placeholder="入手先URLを入力..." spellcheck="false">
+          <button id="multi-open-source-button" class="icon-button" title="ブラウザで開く">↗</button>
         </div>
       </div>
       <div class="form-group">
@@ -848,8 +847,8 @@
       <form method="dialog">
         <div class="dedup-header" style="position: sticky; top: 0; background: inherit; z-index: 1; padding: 0.5rem;">
           <div class="modal-header-row">
-            <h3>Duplicate Files</h3>
-            <button type="button" id="dedup-fullscreen-toggle" class="icon-button modal-fullscreen-icon-btn" title="Full Screen" aria-label="Full Screen" aria-pressed="false" onclick="if(typeof window.toggleDedupFullscreen==='function')window.toggleDedupFullscreen()">
+            <h3>重複ファイルの検出</h3>
+            <button type="button" id="dedup-fullscreen-toggle" class="icon-button modal-fullscreen-icon-btn" title="全画面表示" aria-label="全画面表示" aria-pressed="false" onclick="if(typeof window.toggleDedupFullscreen==='function')window.toggleDedupFullscreen()">
               <svg class="fullscreen-icon-expand" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/>
               </svg>
@@ -858,47 +857,47 @@
               </svg>
             </button>
           </div>
-          <p style="font-size: 0.9rem; margin: 0.2rem 0; color: #555;">
-            De-duplication is performed using the file hash to ensure that only identical files are considered duplicates.
-            Limit the scan to your current library filters so a large collection does not have to be processed all at once.
+          <p style="font-size: 0.9rem; margin: 0.2rem 0; color: #aaa;">
+            ファイルハッシュを用いて内容が完全に一致するファイルのみを重複として検出します。
+            現在のフィルター表示に限定して高速にスキャンすることも可能です。
           </p>
-          <div id="dedup-space-saved" class="dedup-space-saved" title="Disk space freed by deleting duplicate copies in Printventory">
-            <span class="dedup-space-saved-label">Space saved</span>
+          <div id="dedup-space-saved" class="dedup-space-saved" title="重複削除によって解放されたディスク容量">
+            <span class="dedup-space-saved-label">節約できた容量</span>
             <strong id="dedup-space-saved-bytes">0 B</strong>
-            <span id="dedup-space-saved-files" class="dedup-space-saved-files">0 files removed</span>
+            <span id="dedup-space-saved-files" class="dedup-space-saved-files">0 個削除済み</span>
           </div>
           <div id="dedup-scope-container" class="dedup-scope">
-            <span class="dedup-scope-label">Scope</span>
+            <span class="dedup-scope-label">対象範囲</span>
             <label class="dedup-scope-option" for="dedup-scope-current">
               <input type="radio" name="dedup-scope" id="dedup-scope-current" value="current">
-              <span>Current view</span>
+              <span>現在の表示絞り込み</span>
             </label>
             <label class="dedup-scope-option" for="dedup-scope-entire">
               <input type="radio" name="dedup-scope" id="dedup-scope-entire" value="entire" checked>
-              <span>Entire library</span>
+              <span>ライブラリ全体</span>
             </label>
             <p id="dedup-scope-summary" class="dedup-scope-summary"></p>
           </div>
           <div id="dedup-preferred-directory" class="dedup-preferred">
-            <label class="dedup-scope-label" for="dedup-preferred-directory-input">Preferred directory</label>
+            <label class="dedup-scope-label" for="dedup-preferred-directory-input">優先フォルダ (残すフォルダ)</label>
             <div class="dedup-preferred-row">
-              <input type="text" id="dedup-preferred-directory-input" placeholder="Folder whose copies should be kept" autocomplete="off" spellcheck="false">
-              <button type="button" id="dedup-preferred-browse" class="modal-fullscreen-toggle">Browse</button>
-              <button type="button" id="dedup-preferred-clear" class="modal-fullscreen-toggle" title="Clear the preferred directory">Clear path</button>
+              <input type="text" id="dedup-preferred-directory-input" placeholder="残したいファイルのフォルダパス" autocomplete="off" spellcheck="false">
+              <button type="button" id="dedup-preferred-browse" class="modal-fullscreen-toggle">参照...</button>
+              <button type="button" id="dedup-preferred-clear" class="modal-fullscreen-toggle" title="優先フォルダを解除">クリア</button>
             </div>
-            <p class="dedup-scope-summary">Easy keeps one copy from this folder, including subfolders, and selects the other duplicates.</p>
+            <p class="dedup-scope-summary">「おまかせ選択」でこのフォルダ内のファイルを1つ残し、他の重複を選択します。</p>
           </div>
           <div id="include-zip-container" style="display: none; margin: 0.5rem 0;">
             <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
               <input type="checkbox" id="include-zipped-models" style="margin: 0;">
-              <span style="font-size: 0.9rem;">Include Zipped Models</span>
+              <span style="font-size: 0.9rem;">ZIP内のモデルを含める</span>
             </label>
           </div>
           <div class="dialog-buttons" style="display: flex; justify-content: flex-end; gap: 0.5rem;">
-            <button type="button" id="dedup-easy-button" class="easy-button" title="Select all but one per group. Keeps a copy in the preferred directory when one exists, otherwise an archived/ZIP copy." onclick="if(typeof window.dedupEasyFromDialog==='function')window.dedupEasyFromDialog()">Easy</button>
-            <button type="button" id="dedup-clear-button" class="modal-fullscreen-toggle" title="Clear all selections" onclick="if(typeof window.dedupClearFromDialog==='function')window.dedupClearFromDialog()">Clear</button>
-            <button type="button" id="delete-selected" class="danger-button">Delete Selected</button>
-            <button type="button" id="close-dedup" onclick="document.getElementById('dedup-dialog')?.close()">Close</button>
+            <button type="button" id="dedup-easy-button" class="easy-button" title="各重複グループから1つを残して自動選択します" onclick="if(typeof window.dedupEasyFromDialog==='function')window.dedupEasyFromDialog()">おまかせ選択</button>
+            <button type="button" id="dedup-clear-button" class="modal-fullscreen-toggle" title="すべての選択を解除" onclick="if(typeof window.dedupClearFromDialog==='function')window.dedupClearFromDialog()">選択解除</button>
+            <button type="button" id="delete-selected" class="danger-button">選択したファイルを削除</button>
+            <button type="button" id="close-dedup" onclick="document.getElementById('dedup-dialog')?.close()" data-i18n="action.close">閉じる</button>
           </div>
         </div>
         <div class="duplicate-groups" style="max-height: 300px; overflow-y: auto; margin-top: 0.5rem;">
@@ -908,49 +907,49 @@
     </dialog>
     <dialog id="organize-library-dialog" class="modal organize-library-dialog">
       <form method="dialog" id="organize-library-form">
-        <h3>Organize Library</h3>
-        <p class="setting-description">Copy models from a scanned folder into the folders you choose. Each original is removed only after its copy is checked. Files that are not in the library stay where they are.</p>
+        <h3>ライブラリフォルダの整理</h3>
+        <p class="setting-description">スキャンしたフォルダから選択したフォルダ構造へモデルを整理・移動します。コピーが確認された後に元ファイルが削除されます。</p>
         <div class="form-group">
-          <label for="organize-source-button">Scanned directory</label>
+          <label for="organize-source-button">スキャン元フォルダ</label>
           <div class="organize-source-picker">
             <button type="button" id="organize-source-button" class="organize-source-button" aria-haspopup="listbox" aria-expanded="false" aria-controls="organize-source-menu">
-              <span id="organize-source-label">No scanned directories yet</span>
+              <span id="organize-source-label">スキャンしたフォルダがありません</span>
             </button>
             <div id="organize-source-menu" class="organize-source-menu" hidden>
-              <input type="text" id="organize-source-search" class="organize-source-search" placeholder="Search folders" autocomplete="off" spellcheck="false" aria-label="Search scanned directories">
+              <input type="text" id="organize-source-search" class="organize-source-search" placeholder="フォルダを検索" autocomplete="off" spellcheck="false" aria-label="スキャン元フォルダを検索">
               <div id="organize-source-options" class="organize-source-options" role="listbox"></div>
-              <p id="organize-source-empty" class="organize-source-empty" hidden>No matching folders</p>
+              <p id="organize-source-empty" class="organize-source-empty" hidden>一致するフォルダがありません</p>
             </div>
           </div>
           <input type="hidden" id="organize-source-input">
         </div>
         <div class="form-group">
-          <label for="organize-source-subfolder">Folder inside it</label>
+          <label for="organize-source-subfolder">対象サブフォルダ</label>
           <div class="organize-path-row">
-            <input type="text" id="organize-source-subfolder" placeholder="Entire scanned folder" autocomplete="off" spellcheck="false">
-            <button type="button" id="organize-source-sub-browse">Browse</button>
+            <input type="text" id="organize-source-subfolder" placeholder="スキャンフォルダ全体" autocomplete="off" spellcheck="false">
+            <button type="button" id="organize-source-sub-browse">参照...</button>
           </div>
-          <p class="setting-description">Leave this blank to use the whole scanned folder, or choose a folder inside it.</p>
+          <p class="setting-description">空欄にするとフォルダ全体が対象になります。</p>
         </div>
         <div class="form-group">
-          <label for="organize-dest-input">Destination directory</label>
+          <label for="organize-dest-input">移動先フォルダ</label>
           <div class="organize-path-row">
-            <input type="text" id="organize-dest-input" placeholder="New library root" autocomplete="off" spellcheck="false">
-            <button type="button" id="organize-dest-browse">Browse</button>
+            <input type="text" id="organize-dest-input" placeholder="新しいライブラリのルートフォルダ" autocomplete="off" spellcheck="false">
+            <button type="button" id="organize-dest-browse">参照...</button>
           </div>
         </div>
         <div class="organize-structure">
-          <span class="organize-structure-label">Folder structure</span>
+          <span class="organize-structure-label">フォルダ分類の階層ルール</span>
           <div id="organize-structure-rows"></div>
           <p id="organize-structure-preview" class="setting-description"></p>
-          <button type="button" id="organize-structure-add">Add folder</button>
+          <button type="button" id="organize-structure-add">フォルダ階層を追加</button>
         </div>
         <div id="organize-include-zip" class="organize-include-zip" hidden>
           <label for="organize-include-zip-input">
             <input type="checkbox" id="organize-include-zip-input">
-            Include zip files
+            ZIPアーカイブを含める
           </label>
-          <p class="setting-description">Moves each zip archive into the library. Files inside the zip stay packed.</p>
+          <p class="setting-description">ZIPファイルごと整理先に移動します。</p>
         </div>
         <div id="organize-preview" class="organize-preview" hidden>
           <p id="organize-preview-summary"></p>
@@ -960,9 +959,9 @@
           <p id="organize-preview-error" class="organize-preview-error" hidden></p>
         </div>
         <div class="dialog-buttons">
-          <button type="button" id="organize-preview-button">Preview</button>
-          <button type="button" id="organize-confirm-button" disabled>Copy and remove originals</button>
-          <button type="button" id="organize-close-button">Close</button>
+          <button type="button" id="organize-preview-button">プレビュー</button>
+          <button type="button" id="organize-confirm-button" disabled>コピーして元ファイルを削除</button>
+          <button type="button" id="organize-close-button" data-i18n="action.close">閉じる</button>
         </div>
       </form>
     </dialog>
@@ -1863,9 +1862,18 @@
       </dialog>
       <dialog id="settings-dialog" class="modal">
         <form method="dialog">
-          <h3>Theme Settings</h3>
+          <h3 data-i18n="settings.language">UI Language</h3>
           <div class="form-group">
-            <label for="ui-theme">UI Theme:</label>
+            <label for="ui-language-select" data-i18n="settings.language">UI Language:</label>
+            <select id="ui-language-select">
+              <option value="ja">日本語 (Japanese)</option>
+              <option value="en">English</option>
+            </select>
+            <div class="setting-description" data-i18n="settings.languageDesc">UIの表示言語を切り替えます (次回起動時も保持されます)</div>
+          </div>
+          <h3 data-i18n="settings.themeSettings">Theme Settings</h3>
+          <div class="form-group">
+            <label for="ui-theme" data-i18n="settings.uiTheme">UI Theme:</label>
             <select id="ui-theme">
               <option value="modern-cyan">Modern Cyan (Default)</option>
               <option value="modern-purple">Modern Purple</option>
@@ -2217,57 +2225,57 @@ docker run -d --name printventory-server -p 5000:5000 -v printventory-data:/root
       </dialog>
       <dialog id="backup-restore-dialog" class="modal">
         <form method="dialog">
-          <h3>Backup/Restore</h3>
+          <h3>バックアップ / 復元</h3>
           <div style="display: flex; gap: 30px; margin-bottom: 20px;">
             <div style="flex: 1;">
-              <h4 style="margin: 0 0 15px 0; font-size: 16px; font-weight: 600; color: rgba(255, 255, 255, 0.9);">Database</h4>
+              <h4 style="margin: 0 0 15px 0; font-size: 16px; font-weight: 600; color: rgba(255, 255, 255, 0.9);">データベース</h4>
               <div class="form-group">
-                <label>Database Backup</label>
-                <p class="setting-description">Create a backup of your database to save your model information and settings.</p>
-                <button type="button" id="backup-button" class="full-width-button">Create Backup</button>
+                <label>データベースのバックアップ</label>
+                <p class="setting-description">モデル情報や設定を保存するデータベースのバックアップを作成します。</p>
+                <button type="button" id="backup-button" class="full-width-button">バックアップを作成</button>
               </div>
               <div class="form-group">
-                <label>Database Restore</label>
-                <p class="setting-description">Restore your database from a previous backup. This will replace all current data.</p>
-                <button type="button" id="restore-button" class="full-width-button" onclick="if(typeof window.restoreBackupFromDialog==='function')window.restoreBackupFromDialog()">Restore from Backup</button>
+                <label>データベースの復元</label>
+                <p class="setting-description">過去のバックアップからデータベースを復元します (現在のデータは置き換えられます)。</p>
+                <button type="button" id="restore-button" class="full-width-button" onclick="if(typeof window.restoreBackupFromDialog==='function')window.restoreBackupFromDialog()">バックアップから復元</button>
               </div>
             </div>
             <div style="flex: 1;">
-              <h4 style="margin: 0 0 15px 0; font-size: 16px; font-weight: 600; color: rgba(255, 255, 255, 0.9);">Library</h4>
+              <h4 style="margin: 0 0 15px 0; font-size: 16px; font-weight: 600; color: rgba(255, 255, 255, 0.9);">ライブラリ</h4>
               <div class="form-group">
-                <label>Library Export</label>
-                <p class="setting-description">Export your library (models and tags) as a JSON file for backup or sharing.</p>
-                <button type="button" id="export-library-button" class="full-width-button" onclick="if(typeof window.exportLibraryFromDialog==='function')window.exportLibraryFromDialog()">Export Library</button>
+                <label>ライブラリのエクスポート</label>
+                <p class="setting-description">ライブラリ情報 (モデルやタグ) をJSONファイルとしてエクスポートします。</p>
+                <button type="button" id="export-library-button" class="full-width-button" onclick="if(typeof window.exportLibraryFromDialog==='function')window.exportLibraryFromDialog()">ライブラリをエクスポート</button>
               </div>
               <div class="form-group">
-                <label>Library Import</label>
-                <p class="setting-description">Import a library JSON file to merge models and tags into your current library.</p>
-                <button type="button" id="import-library-button" class="full-width-button" onclick="if(typeof window.importLibraryFromDialog==='function')window.importLibraryFromDialog()">Import Library</button>
+                <label>ライブラリのインポート</label>
+                <p class="setting-description">ライブラリJSONファイルをインポートして現在のライブラリに統合します。</p>
+                <button type="button" id="import-library-button" class="full-width-button" onclick="if(typeof window.importLibraryFromDialog==='function')window.importLibraryFromDialog()">ライブラリをインポート</button>
               </div>
             </div>
           </div>
           <div class="scheduled-backup-section">
-            <h4 style="margin: 0 0 15px 0; font-size: 16px; font-weight: 600; color: rgba(255, 255, 255, 0.9);">Scheduled backup</h4>
-            <p class="setting-description">Daily and weekly copies run at the time you choose, including while Printventory is closed. On quit copies when the app closes. Server mode runs daily and weekly while the process is up. Older copies past the keep count are removed.</p>
+            <h4 style="margin: 0 0 15px 0; font-size: 16px; font-weight: 600; color: rgba(255, 255, 255, 0.9);">定期バックアップ</h4>
+            <p class="setting-description">指定した日時に自動でバックアップを作成します。上限を超えた古いバックアップは自動削除されます。</p>
             <div class="form-group">
-              <label for="scheduled-backup-folder">Backup folder</label>
+              <label for="scheduled-backup-folder">バックアップ先フォルダ</label>
               <div class="scheduled-backup-path-row">
-                <input type="text" id="scheduled-backup-folder" placeholder="Folder for timestamped copies" autocomplete="off" spellcheck="false">
-                <button type="button" id="scheduled-backup-browse">Browse</button>
+                <input type="text" id="scheduled-backup-folder" placeholder="保存先フォルダのパス" autocomplete="off" spellcheck="false">
+                <button type="button" id="scheduled-backup-browse">参照...</button>
               </div>
             </div>
             <div class="scheduled-backup-options">
               <div class="form-group">
-                <label for="scheduled-backup-frequency">Frequency</label>
+                <label for="scheduled-backup-frequency">頻度</label>
                 <select id="scheduled-backup-frequency">
-                  <option value="off">Off</option>
-                  <option value="daily">Daily</option>
-                  <option value="weekly">Weekly</option>
-                  <option value="quit">On quit</option>
+                  <option value="off">オフ (無効)</option>
+                  <option value="daily">毎日</option>
+                  <option value="weekly">毎週</option>
+                  <option value="quit">アプリ終了時</option>
                 </select>
               </div>
               <div class="form-group">
-                <label for="scheduled-backup-time">Time</label>
+                <label for="scheduled-backup-time">実行時刻</label>
                 <input type="time" id="scheduled-backup-time" value="03:00" step="60">
               </div>
               <div class="form-group">
@@ -2886,15 +2894,15 @@ docker run -d --name printventory-server -p 5000:5000 -v printventory-data:/root
 
       <dialog id="manage-thumbnails-dialog" class="modal">
         <form method="dialog">
-          <h3>Manage Thumbnails</h3>
+          <h3>サムネイルの管理</h3>
           <div class="form-group">
-            <p style="margin: 0 0 16px 0; color: #aaa; font-size: 0.9rem;">Select a thumbnail to set it as active, or delete thumbnails (the active thumbnail cannot be deleted).</p>
+            <p style="margin: 0 0 16px 0; color: #aaa; font-size: 0.9rem;">サムネイルをクリックしてメインに設定、または不要なサムネイルを削除できます (メインサムネイルは削除できません)。</p>
             <div id="thumbnails-grid" class="thumbnails-grid">
               <!-- Thumbnails will be added here dynamically -->
             </div>
           </div>
           <div class="dialog-buttons">
-            <button type="button" onclick="document.getElementById('manage-thumbnails-dialog')?.close()">Close</button>
+            <button type="button" onclick="document.getElementById('manage-thumbnails-dialog')?.close()" data-i18n="action.close">閉じる</button>
           </div>
         </form>
       </dialog>
@@ -2903,16 +2911,16 @@ docker run -d --name printventory-server -p 5000:5000 -v printventory-data:/root
   <div id="loading-overlay">
     <div class="spinner">
       <div class="loader"></div>
-      <p>Loading model database...</p>
-      <button id="continue-anyways" onclick="document.getElementById('loading-overlay').style.display='none'"><strong>CONTINUE ANYWAYS</strong><br><i>MAY IMPACT PERFORMANCE</i></button>
+      <p>モデルデータベースを読み込み中...</p>
+      <button id="continue-anyways" onclick="document.getElementById('loading-overlay').style.display='none'"><strong>このまま続行</strong><br><i>パフォーマンスに影響が出る場合があります</i></button>
     </div>
   </div>
 
   <!-- Progress overlay for thumbnail regeneration / missing thumbnail generation -->
   <div id="thumbnail-progress-overlay" class="tp-overlay" role="dialog" aria-modal="true" aria-labelledby="thumbnail-progress-title" hidden>
     <div class="tp-panel">
-      <h3 class="tp-title" id="thumbnail-progress-title">Generating Thumbnails</h3>
-      <p class="tp-phase" id="thumbnail-progress-phase">Preparing...</p>
+      <h3 class="tp-title" id="thumbnail-progress-title">サムネイルを生成中</h3>
+      <p class="tp-phase" id="thumbnail-progress-phase">準備中...</p>
       <div class="tp-track" id="thumbnail-progress-track">
         <div class="tp-fill" id="thumbnail-progress-fill"></div>
       </div>
@@ -2921,8 +2929,8 @@ docker run -d --name printventory-server -p 5000:5000 -v printventory-data:/root
         <span id="thumbnail-progress-percent"></span>
       </div>
       <div class="tp-actions">
-        <button type="button" class="tp-background" id="thumbnail-progress-background" hidden>Background</button>
-        <button type="button" class="tp-cancel" id="thumbnail-progress-cancel">Stop</button>
+        <button type="button" class="tp-background" id="thumbnail-progress-background" hidden>バックグラウンドで実行</button>
+        <button type="button" class="tp-cancel" id="thumbnail-progress-cancel">停止</button>
       </div>
     </div>
   </div>

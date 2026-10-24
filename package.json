@@ -135,7 +135,7 @@
       "perMachine": true,
       "include": "installer.nsh",
       "differentialPackage": true,
-      "displayLanguageSelector": true,
+      "displayLanguageSelector": false,
       "artifactName": "Printventory-Setup-${version}.${ext}",
       "deleteAppDataOnUninstall": false
     },
@@ -162,6 +162,8 @@
       "preload.js",
       "input-dialog-preload.js",
       "input-dialog.html",
+      "i18n.js",
+      "locales/**",
       "renderer.js",
       "notes-markdown.js",
       "dedup-preferred.js",
